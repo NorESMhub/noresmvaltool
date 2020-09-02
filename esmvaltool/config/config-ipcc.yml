@@ -10,7 +10,7 @@ rootpath:
   OBS: /projects/NS9252K/obsdata
   OBS6: /projects/NS9252K/obsdata
   obs4mips: /projects/NS9252K/obsdata
-  RAWOBS: /projects/NS9252K/rawobsdata
+  RAWOBS: /projects/NS9252K/rawdata/obs
   default: ~/obsdata
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
