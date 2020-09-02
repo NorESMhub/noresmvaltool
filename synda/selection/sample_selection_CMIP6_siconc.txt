@@ -1,0 +1,8 @@
+project=CMIP6
+variant_label=r1i1p1f1
+source_id=NorESM2-LM,CESM2,EC-Earth3,HadGEM3-GC31-LM,GFDL-CM4,MRI-ESM2-0
+experiment_id=historical,rcp85
+table_id=SImon
+latest=true
+variable_id=siconc
+grid_label=gn

@@ -1,0 +1,8 @@
+project=CMIP5
+ensemble=r1i1p1
+model=NorESM1-M,NorESM1-ME,CESM1-WACCM,CESM1-CAM5,CCSM4,GFDL-CM3,MIROC5
+experiment=historical,rcp85
+cmor_table=OImon
+latest=true
+variable[seaIce][mon]=sic
+local_path_format=treevar
