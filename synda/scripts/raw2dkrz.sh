@@ -1,14 +1,14 @@
 #!/bin/env bash
 set -e
 
-# sort and move cmip5/cmip6 data of ETHZ folder structure to DKRZ folder structure
+# sort and move downloaded raw cmip5/cmip6 data to DKRZ folder structure under /projects/NS9252K/ESGF
 # yanchun.he@nersc.no; last update: 2020.09.02
 
 if [ $# -lt 3 ] || [ $1 == "--help" ]
 then
     printf "\n"
     printf "Usage:\n"
-    printf 'sort_cmip.sh \
+    printf 'raw2dkrz.sh \
         --project=[cmip5|cmip6]     : set phase of CMIP data \
         --action=[move|link]        : move the file or hard link the file \
         --input=[patterns for files or/and folders]  : file  or/and folder/path patterns (use " " for matching patters\
@@ -18,7 +18,7 @@ then
         \n'
     printf "\n"
     printf "Example:\n"
-    printf 'sort_cmip.sh --project=cmip6 --action=move --input="/filepath/filepattern*.txt /another/folder/path" --keeplink=true --force=true\n'
+    printf 'raw2dkrz.sh --project=cmip6 --action=move --input="/filepath/filepattern*.txt /another/folder/path" --keeplink=true --force=true\n'
     printf "\n"
     exit 1
 else
