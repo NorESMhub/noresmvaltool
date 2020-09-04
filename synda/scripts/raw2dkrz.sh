@@ -93,7 +93,7 @@ done
 while read -r fname
 do
     # local source file name and variable name
-    ncfile=$(echo $fname |awk -F/ '{print $NF}')
+    ncfile=$(basename $fname)
     varname=$(echo $ncfile |cut -d"_" -f1)
     # sha256sum of local file
     checksuml=$(sha256sum $fname |cut -d" " -f1)
@@ -150,9 +150,16 @@ do
         else
             [ ! -d $destdir ] && mkdir -p $destdir
             mv -v $fname $destdir/$ncfile
+            # make a softlink back in the source folder
             if $keeplink
             then
-                ln -s $destdir/$ncfile $fname 
+                srcdirlevs=$(dirname $fname |awk -F/ '{print NF}')
+                # upper dirs excluding /projects/NS9252K
+                upperdir=""
+                for (( i = 0; i < $srcdirlevs-3; i++ )); do
+                    upperdir="${upperdir}../"
+                done
+                ln -s ${upperdir}ESGF/$dkrz/$ncfile $fname 
             fi
         fi
     else
