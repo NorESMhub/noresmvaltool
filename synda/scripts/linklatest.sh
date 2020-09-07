@@ -7,7 +7,9 @@ set -e
 
 if [ $# -ne 1 ]
 then
-    echo "Usage ./linklatest path/to/folder"
+    echo "Usage ./linklatest.sh /path/to/parent/folder"
+    echo "Note, the specified path goes no deeper than the grid type"
+    echo 'e.g., ./linklatest.sh ${ROOPATH}/CMIP6/CMIP/NCAR/CESM2/historical/r1i1p1f1/Amon/'
     exit
 fi
 
