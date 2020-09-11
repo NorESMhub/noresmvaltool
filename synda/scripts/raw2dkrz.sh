@@ -1,8 +1,9 @@
 #!/bin/env bash
-set -e
+#set -e
 
-# sort and move downloaded raw cmip5/cmip6 data to DKRZ folder structure under /projects/NS9252K/ESGF
-# yanchun.he@nersc.no; last update: 2020.09.02
+# sort and move downloaded raw cmip5/cmip6 data
+# to DKRZ folder structure under /projects/NS9252K/ESGF
+# yanchun.he@nersc.no; last update: 2020.09.11
 
 if [ $# -lt 3 ] || [ $1 == "--help" ]
 then
@@ -70,6 +71,7 @@ echo "------------------"
 esgf=/projects/NS9252K/ESGF
 
 pid=$$
+## generate filelist of all matching files
 for list in $(echo $input)
 do
 
@@ -90,6 +92,7 @@ do
     fi
 done
 
+## loop through all files
 while read -r fname
 do
     # local source file name and variable name
@@ -101,11 +104,16 @@ do
     # (synda can retrieve the correct version, at least for cmip6)
     # (e.g., synda show tas_Amon_CESM2_abrupt-4xCO2_r1i1p1f1_gn_045001-049912.nc shows the correct version v20190927)
     # (and synda version CMIP6.CMIP.NCAR.CESM2.abrupt-4xCO2.r1i1p1f1.Amon.tas.gn.v20190927, shows there are four versions)
-    checksumr=$(synda show $ncfile |grep 'checksum' |cut -d" " -f2)
+    metainfo="$(synda show $ncfile)"
+    checksumr=$(echo "$metainfo" |grep 'checksum' |cut -d" " -f2)
+    if [ $? -ne 0 ]
+    then
+        continue
+    fi
     # file information retrieved by synda
-    fileremote=$(synda show $ncfile |grep 'file:')
+    fileremote=$(echo "$metainfo" |grep 'file:'|cut -d":" -f2 |sed 's/^\s//g')
     # convert the retreived information to dkrz folder structure
-    dkrz=$(echo $fileremote |cut -d":" -f2 |tr -d " " |awk -F. '{ for(i=1;i<=NF-2;i++) printf "%s/",$i; printf "\n"}'|sed 's/\/$//')
+    dkrz=$(echo $fileremote |awk -F. '{ for(i=1;i<=NF-2;i++) printf "%s/",$i; printf "\n"}'|sed 's/\/$//')
     # get file version information
     version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
     # if any error with retrieving the data at ESGF
@@ -151,7 +159,7 @@ do
             [ ! -d $destdir ] && mkdir -p $destdir
             mv -v $fname $destdir/$ncfile
             # make a softlink back in the source folder
-            if $keeplink
+            if $keeplink && [ $? -eq 0 ]
             then
                 srcdirlevs=$(dirname $fname |awk -F/ '{print NF}')
                 # upper dirs excluding /projects/NS9252K
