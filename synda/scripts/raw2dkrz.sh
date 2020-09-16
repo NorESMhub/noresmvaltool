@@ -15,18 +15,20 @@ then
         --input=[patterns for files or/and folders]  : file  or/and folder/path patterns (use " " for matching patters\
         --keeplink=[true|false]     : optional, only applies when --action==move \
         --dryrun=[true|false]       : optional \
-        --force=[true|false]        : force the action \
+        --overwrite=[true|false]    : force the action/overwrite the file at destination \
+        --autofix=[true|false]      : automatic download files with wrong checksum \
         \n'
     printf "\n"
     printf "Example:\n"
-    printf 'raw2dkrz.sh --project=cmip6 --action=move --input="/filepath/filepattern*.txt /another/folder/path" --keeplink=true --force=true\n'
+    printf 'raw2dkrz.sh --project=cmip6 --action=move --input="/filepath/filepattern*.txt /another/folder/path" --keeplink=true --overwrite=true --autofix=true\n'
     printf "\n"
     exit 1
 else
     # set default value
     dryrun=false
     keeplink=false
-    force=true
+    overwrite=true
+    autofix=true
     while test $# -gt 0; do
         case "$1" in
             --project=*)
@@ -49,8 +51,12 @@ else
                 dryrun=$(echo $1|sed -e 's/^[^=]*=//g')
                 shift
                 ;;
-            --force=*)
-                force=$(echo $1|sed -e 's/^[^=]*=//g')
+            --overwrite=*)
+                overwrite=$(echo $1|sed -e 's/^[^=]*=//g')
+                shift
+                ;;
+            --autofix=*)
+                autofix=$(echo $1|sed -e 's/^[^=]*=//g')
                 shift
                 ;;
             * )
@@ -77,7 +83,7 @@ do
 
     if [ -f $list ]; then
         if [ ${list: -3} == ".nc" ]; then
-            echo $list >>/tmp/filelist.$pid
+            readlink -e $list >>/tmp/filelist.$pid  #use absolute path
         else
             echo "** WARNING **"
             echo "   $list "
@@ -96,30 +102,70 @@ done
 while read -r fname
 do
     # local source file name and variable name
+    ncpath=$(dirname $fname)
     ncfile=$(basename $fname)
     varname=$(echo $ncfile |cut -d"_" -f1)
     # sha256sum of local file
     checksuml=$(sha256sum $fname |cut -d" " -f1)
-    # sha256sum of remote file. Note synda show the oldest version (latest=true does not help)
-    # (synda can retrieve the correct version, at least for cmip6)
-    # (e.g., synda show tas_Amon_CESM2_abrupt-4xCO2_r1i1p1f1_gn_045001-049912.nc shows the correct version v20190927)
-    # (and synda version CMIP6.CMIP.NCAR.CESM2.abrupt-4xCO2.r1i1p1f1.Amon.tas.gn.v20190927, shows there are four versions)
-    metainfo="$(synda show $ncfile)"
-    checksumr=$(echo "$metainfo" |grep 'checksum' |cut -d" " -f2)
-    if [ $? -ne 0 ]
-    then
+    # sha256sum of remote file.
+    #metainfo="$(synda show $ncfile)"
+    #checksumr=$(echo "$metainfo" |grep 'checksum' |cut -d" " -f2 2>/dev/null)
+    # file information retrieved by synda
+    #fileremote=$(echo "$metainfo" |grep 'file:'|cut -d":" -f2 |sed 's/^\s//g')
+    # convert the retreived information to dkrz folder structure
+    #dkrz=$(echo $fileremote |awk -F. '{ for(i=1;i<=NF-2;i++) printf "%s/",$i; printf "\n"}'|sed 's/\/$//')
+    # get file version information
+    #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
+
+    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path -F value 2>/dev/null))
+    # if file not found at ESGF
+    if [ ${#items[*]} -eq 0 ]; then
+        echo "** ERROR **"
+        echo "$ncfile"
+        echo "NOT found at ESGF"
+        echo "(likely all matching datasets have been retracted from ESGF)"
         continue
     fi
-    # file information retrieved by synda
-    fileremote=$(echo "$metainfo" |grep 'file:'|cut -d":" -f2 |sed 's/^\s//g')
-    # convert the retreived information to dkrz folder structure
-    dkrz=$(echo $fileremote |awk -F. '{ for(i=1;i<=NF-2;i++) printf "%s/",$i; printf "\n"}'|sed 's/\/$//')
-    # get file version information
-    version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
-    # if any error with retrieving the data at ESGF
-    if [ $? -ne 0 ]; then
-        echo "$ncfile not found at ESGF"
+    flag=false
+    checksumrs=()
+    for (( n =((${#items[*]}/3)); n>=1; n-- ))  # loop from latest version
+    do
+        checksumr=${items[($n-1)*3]}    # checksum of remote file
+        # check if sha256sum of the local and remote files match
+        if [ "$checksuml" == "$checksumr" ]; then
+            flag=true
+            break
+        fi
+        checksumrs+=($checksumr)
+    done
+    if ! $flag
+    then
+        echo "** ERROR **"
+        echo " Checksum of local file:"
+        echo " $ncfile "
+        echo " matches none of the remote ESGF files"
+        echo " (likely the local file was retracted from ESGF, but other versions exist)"
+        echo "checksum local:"
+        echo "$checksuml"
+        echo "checksum remote:"
+        echo "${checksumrs[*]}" |sed 's/ /\n/g'
+
+        if $autofix
+        then
+            echo "** The latest version will be downloaded! **"
+            synda get -f --verify_checksum --dest_folder $ncpath $ncfile &>/dev/null
+            [ $? -eq 0 ] && echo "File downloaded sucessfully!"
+        fi
+        # continue, the downloaded file will not moved,
+        # but wait until the next time when this is script will be invoked again
+        # and the above proceedure will be repeated
+        continue
     fi
+
+    # get local dkrz folder structure
+    version=${items[($n-1)*3+1]}
+    local_path=${items[($n-1)*3+2]}
+    dkrz=$(dirname $local_path)
 
     # destination dir
     if [ $project == "cmip5" ]; then
@@ -128,20 +174,10 @@ do
         destdir=$esgf/$dkrz
     fi
 
-    # check if sha256sum of the local and remote files match
-    if [ "$checksuml" != "$checksumr" ]; then
-        echo "checksum at local file:"
-        echo "$fname"
-        echo "differs with remote file:"
-        echo $dkrz/$ncfile
-        echo " "
-        echo "Ingore, and move to the next... "
-        continue
-    fi
     # move file to dkrz folder structure
     ! $dryrun && [ ! -d $destdi ] && mkdir -p $destdir
     if [ -f $destdir/$ncfile ]; then
-        if $force; then
+        if $overwrite; then
             rm -f $destdir/$ncfile
         else
             echo "** WARNING **"
