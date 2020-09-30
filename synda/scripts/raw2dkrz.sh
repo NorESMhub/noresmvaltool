@@ -13,10 +13,10 @@ then
         --project=[cmip5|cmip6]     : set phase of CMIP data \
         --action=[move|link]        : move the file or hard link the file \
         --input=[patterns for files or/and folders]  : file  or/and folder/path patterns (use " " for matching patters\
-        --keeplink=[true|false]     : optional, only applies when --action==move \
-        --dryrun=[true|false]       : optional \
-        --overwrite=[true|false]    : force the action/overwrite the file at destination \
-        --autofix=[true|false]      : automatic download files with wrong checksum \
+        --keeplink=[true|false]     : optional, only applies when --action==move; default false \
+        --dryrun=[true|false]       : optional; default false \
+        --overwrite=[true|false]    : force the action/overwrite the file at destination; default true \
+        --autofix=[true|false]      : automatic download files with wrong checksum; default true \
         \n'
     printf "\n"
     printf "Example:\n"
@@ -73,6 +73,7 @@ alias synda=/projects/NS9252K/conda/synda/bin/synda
 echo "--- Job starts ---"
 date
 echo "------------------"
+echo ""
 
 esgf=/projects/NS9252K/ESGF
 
@@ -87,14 +88,14 @@ do
         else
             echo "** WARNING **"
             echo "   $list "
-            echo "   is not NetCDF file! SKIP..."
+            echo -e "   is not NetCDF file! SKIP...\n"
         fi
     elif [ -d $list ]; then
         find $list -type f -name '*.nc' -print >>/tmp/filelist.$pid
     else
         echo "** WARNING **"
         echo "   $list "
-        echo "   does not exist, SKIP..."
+        echo -e "   does not exist, SKIP...\n"
     fi
 done
 
@@ -123,7 +124,7 @@ do
         echo "** ERROR **"
         echo "$ncfile"
         echo "NOT found at ESGF"
-        echo "(likely all matching datasets have been retracted from ESGF)"
+        echo -e "(likely all matching datasets have been retracted from ESGF)\n"
         continue
     fi
     flag=false
@@ -149,12 +150,19 @@ do
         echo "$checksuml"
         echo "checksum remote:"
         echo "${checksumrs[*]}" |sed 's/ /\n/g'
+        echo ""
 
         if $autofix
         then
             echo "** The latest version will be downloaded! **"
-            synda get -f --verify_checksum --dest_folder $ncpath $ncfile &>/dev/null
-            [ $? -eq 0 ] && echo "File downloaded sucessfully!"
+            synda get -q -f --verify_checksum --dest_folder $ncpath $ncfile 1>/dev/null
+            if [ $? -eq 0 ]; then
+                echo -e "File is downloaded sucessfully!\n"
+                echo "       "
+            else
+                echo -e "File is not downloaded sucessfully\n"
+                echo "       "
+            fi
         fi
         # continue, the downloaded file will not moved,
         # but wait until the next time when this is script will be invoked again
@@ -182,7 +190,7 @@ do
         else
             echo "** WARNING **"
             echo $destdir/$ncfile
-            echo "already exits! Ingore and move to the next... "
+            echo -e "already exits! Ingore and move to the next...\n"
             continue
         fi
     fi
@@ -190,7 +198,7 @@ do
         if $dryrun
         then
             echo "** DRY RUN **"
-            echo "mv -v $fname $destdir/$ncfile"
+            echo -e "mv -v $fname $destdir/$ncfile.\n"
         else
             [ ! -d $destdir ] && mkdir -p $destdir
             mv -v $fname $destdir/$ncfile
@@ -214,7 +222,7 @@ do
             [ ! -d $destdir ] && mkdir -p $destdir
             ln $fname $destdir/$ncfile
         fi
-        echo "ln $fname $destdir/$ncfile"
+        echo -e "ln $fname $destdir/$ncfile\n"
     fi
     if ! $dryrun
     then
