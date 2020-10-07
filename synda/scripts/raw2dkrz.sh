@@ -5,30 +5,37 @@
 # to DKRZ folder structure under /projects/NS9252K/ESGF
 # yanchun.he@nersc.no; last update: 2020.09.11
 
-if [ $# -lt 3 ] || [ $1 == "--help" ]
+if [ $1 == "-h" ] || [ $1 == "--help" ]
 then
     printf "\n"
     printf "Usage:\n"
-    printf 'raw2dkrz.sh \
-        --project=[cmip5|cmip6]     : set phase of CMIP data \
-        --action=[move|link]        : move the file or hard link the file \
-        --input=[patterns for files or/and folders]  : file  or/and folder/path patterns (use " " for matching patters\
-        --keeplink=[true|false]     : optional, only applies when --action==move; default false \
-        --dryrun=[true|false]       : optional; default false \
-        --overwrite=[true|false]    : force the action/overwrite the file at destination; default true \
-        --autofix=[true|false]      : automatic download files with wrong checksum; default true \
-        \n'
+    printf 'raw2dkrz.sh
+        --project=[cmip5|cmip6]     : (optional) default cmip6; set phase of CMIP data
+        --action=[move|link]        : (optional) default move; move the file or hard link the file
+        --input=["files or/and folders patterns"]
+                                    : (optional) default to /projects/NS9252K/rawdata/model;
+                                      file or/and folder/path patterns (use " " for matching patters)
+        --keeplink=[true|false]     : (optional); default false; only applies when --action==move
+        --dryrun=[true|false]       : (optional); default false
+        --overwrite=[true|false]    : (optional); default true; force the action/overwrite the file at destination
+        --autofix=[true|false]      : (optional); default true; automatic download files with wrong checksum
+        --verbose=[true|false]      : (optional); default true; automatic download files with wrong checksum'
     printf "\n"
     printf "Example:\n"
-    printf 'raw2dkrz.sh --project=cmip6 --action=move --input="/filepath/filepattern*.txt /another/folder/path" --keeplink=true --overwrite=true --autofix=true\n'
+    printf '1: raw2dkrz.sh --input="/path/filepatterns*.nc /path/to/folders"\n'
+    printf '2: raw2dkrz.sh --project=cmip6 --action=move --input="/path/filepatterns*.nc and/or /path/to/folders" --keeplink=true --overwrite=true --autofix=true\n'
     printf "\n"
     exit 1
 else
     # set default value
+    project=cmip6
+    action=move
     dryrun=false
     keeplink=false
     overwrite=true
     autofix=true
+    verbose=true
+    input=/projects/NS9252K/rawdata/model
     while test $# -gt 0; do
         case "$1" in
             --project=*)
@@ -59,6 +66,10 @@ else
                 autofix=$(echo $1|sed -e 's/^[^=]*=//g')
                 shift
                 ;;
+            --verbose=*)
+                verbose=$(echo $1|sed -e 's/^[^=]*=//g')
+                shift
+                ;;
             * )
                 echo "ERROR: option $1 not allowed."
                 echo "*** EXITING THE SCRIPT"
@@ -69,11 +80,32 @@ else
 fi
 
 alias synda=/projects/NS9252K/conda/synda/bin/synda
+if [ -z $ST_HOME ];then
+    export ST_HOME=${HOME}/.synda
+fi
+# test if synda is initialised
+if [ ! -d ~/.synda ]; then
+    echo "Seems this is the first time for you to run Synda"
+    echo "Initialize Synda configuration wizard"
+    echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
+    echo ""
+    synda check-env
+fi
+# check if configured correctly
+synda get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+if [ $? -ne 0 ];then
+    echo "** WARNING **"
+    echo "Synda may not configured correctly"
+    echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
+    echo ""
+fi
 
-echo "--- Job starts ---"
-date
-echo "------------------"
-echo ""
+if $verbose; then
+  echo "--- Job starts ---"
+  date
+  echo "------------------"
+  echo ""
+fi
 
 esgf=/projects/NS9252K/ESGF
 
@@ -82,7 +114,11 @@ pid=$$
 for list in $(echo $input)
 do
 
-    if [ -f $list ]; then
+    if [ -L $list ]; then
+        echo "** WARNING **"
+        echo "   $list "
+        echo -e "is a link! SKIP...\n"
+    elif [ -f $list ]; then
         if [ ${list: -3} == ".nc" ]; then
             readlink -e $list >>/tmp/filelist.$pid  #use absolute path
         else
@@ -95,9 +131,15 @@ do
     else
         echo "** WARNING **"
         echo "   $list "
-        echo -e "   does not exist, SKIP...\n"
+        echo -e "does not exist! SKIP...\n"
     fi
 done
+
+if [ ! -f /tmp/filelist.$pid ]; then
+    echo "** WARNING **"
+    echo " Noting to move, EXIT"
+    exit
+fi
 
 ## loop through all files
 while read -r fname
@@ -181,6 +223,7 @@ do
     else
         destdir=$esgf/$dkrz
     fi
+    chmod g+s $destdir
 
     # move file to dkrz folder structure
     ! $dryrun && [ ! -d $destdi ] && mkdir -p $destdir
@@ -232,6 +275,9 @@ do
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
 
-echo "---- Job ends  ---"
-date
-echo "------------------"
+if $verbose; then
+  echo "---- Job ends  ---"
+  date
+  echo "------------------"
+fi
+
