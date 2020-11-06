@@ -1,7 +1,7 @@
 project=CMIP5
 ensemble=r1i1p1
 model=ACCESS1.0,ACCESS1.3,CNRM-CM5,CSIRO-Mk3.6.0,CSIRO-Mk3L-1-2,CanESM2,EC-EARTH,FGOALS-g2,FGOALS-s2,GFDL-ESM2G,GFDL-ESM2M,GISS-E2-H,GISS-E2-R,HadGEM2-ES,INM-CM4,IPSL-CM5A-LR,IPSL-CM5A-MR,IPSL-CM5B-LR,MIROC-ESM,MIROC5,MPI-ESM-LR,MPI-ESM-MR,MPI-ESM-P,MRI-CGCM3,NorESM1-M,NorESM1-ME
-experiment=piControl,abrupt-4xCO2
+experiment=piControl,abrupt4xCO2
 cmor_table=Omon
 latest=true
 variable[ocean][mon]=thetao,tos

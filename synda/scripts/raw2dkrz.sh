@@ -5,7 +5,7 @@
 # to DKRZ folder structure under /projects/NS9252K/ESGF
 # yanchun.he@nersc.no; last update: 2020.09.11
 
-if [ $1 == "-h" ] || [ $1 == "--help" ]
+if [ $# -eq 0 ] || [ $1 == "-h" ] || [ $1 == "--help" ]
 then
     printf "\n"
     printf "Usage:\n"
