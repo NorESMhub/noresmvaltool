@@ -50,7 +50,7 @@ save_intermediary_cubes: true
 remove_preproc_dir: false
 # Path to custom config-developer file, to customise project configurations.
 # See config-developer.yml for an example. Set to None to use the default
-config_developer_file: ./config-developer.yml
+config_developer_file: /projects/NS9252K/share/esmvaltool/config/config-developer.yml
 # Get profiling information for diagnostics
 # Only available for Python diagnostics
 profile_diagnostic: false

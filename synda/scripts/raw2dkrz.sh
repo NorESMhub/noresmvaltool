@@ -92,7 +92,10 @@ if [ ! -d ~/.synda ]; then
     synda check-env
 fi
 # check if configured correctly
-synda get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+# alternative file for test cfc12global_Amon_CESM2_historical_r11i1p1f1_gn_200001-201412.nc
+#synda get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+# (synda get may fail for not subscribing to role/group?)
+synda dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
 if [ $? -ne 0 ];then
     echo "** WARNING **"
     echo "Synda may not configured correctly"
@@ -223,10 +226,10 @@ do
     else
         destdir=$esgf/$dkrz
     fi
-    chmod g+s $destdir
 
     # move file to dkrz folder structure
-    ! $dryrun && [ ! -d $destdi ] && mkdir -p $destdir
+    ! $dryrun && [ ! -d $destdir ] && mkdir -p $destdir
+    chmod g+s $destdir
     if [ -f $destdir/$ncfile ]; then
         if $overwrite; then
             rm -f $destdir/$ncfile
