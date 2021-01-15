@@ -1,6 +1,7 @@
 #!/bin/env bash
 
-## This is a crontab scheduled task, running automatically every 30 mins (nird login node0)
+## This is a crontab scheduled task, running automatically every 30 mins
+## currently installed in login2
 #*     *     *   *    *        command to be executed
 #-     -     -   -    -
 #|     |     |   |    |
@@ -11,10 +12,11 @@
 #+------------- min (0 - 59)
 #0,30   *     *   *    *        . /projects/NS9252K/share/synda/scripts/crontab.sh
 
-njobs=$(ps x |grep -v 'grep' |grep -c 'raw2dkrz.sh')
+njobs1=$(ps x |grep -v 'grep' |grep -c 'raw2dkrz.sh')
+njobs2=$(ps x |grep -v 'grep' |grep -c 'crontab.sh')
 
 # if running jobs
-if [ $njobs -ge 1 ]; then
+if [ $njobs1 -ge 1 ] || [ $njobs2 -ge 3 ]; then
     exit
 fi
 
