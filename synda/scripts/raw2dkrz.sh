@@ -274,8 +274,13 @@ do
     fi
     if ! $dryrun
     then
-        latestversion=$(ls $destdir/../ |grep -E 'v20[0-9]{6}' |sort |tail -1)
-        ln -sfT "$latestversion"  "$destdir/../latest"
+        if [ $project == "cmip5" ]; then
+            latestversion=$(ls $destdir/../../ |grep -E 'v20[0-9]{6}' |sort |tail -1)
+            ln -sfT "$latestversion"  "$destdir/../../latest"
+        else
+            latestversion=$(ls $destdir/../ |grep -E 'v20[0-9]{6}' |sort |tail -1)
+            ln -sfT "$latestversion"  "$destdir/../latest"
+        fi
     fi
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
