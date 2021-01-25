@@ -10,11 +10,10 @@ then
     printf "\n"
     printf "Usage:\n"
     printf 'raw2dkrz.sh
-        --project=[cmip5|cmip6]     : (optional) default cmip6; set phase of CMIP data
-        --action=[move|link]        : (optional) default move; move the file or hard link the file
         --input=["files or/and folders patterns"]
                                     : (optional) default to /projects/NS9252K/rawdata/model;
                                       file or/and folder/path patterns (use " " for matching patters)
+        --action=[move|link]        : (optional) default move; move the file or hard link the file
         --keeplink=[true|false]     : (optional); default false; only applies when --action==move
         --dryrun=[true|false]       : (optional); default false
         --overwrite=[true|false]    : (optional); default true; force the action/overwrite the file at destination
@@ -23,12 +22,12 @@ then
     printf "\n"
     printf "Example:\n"
     printf '1: raw2dkrz.sh --input="/path/filepatterns*.nc /path/to/folders"\n'
-    printf '2: raw2dkrz.sh --project=cmip6 --action=move --input="/path/filepatterns*.nc and/or /path/to/folders" --keeplink=true --overwrite=true --autofix=true\n'
+    printf '2: raw2dkrz.sh --input="/path/filepatterns*.nc and/or /path/to/folders" --action=move --keeplink=true --overwrite=true --autofix=true\n'
     printf "\n"
     exit 1
 else
     # set default value
-    project=cmip6
+    #project=cmip6 (update 22JAN2021: this is automatically detected)
     action=move
     dryrun=false
     keeplink=false
@@ -39,7 +38,8 @@ else
     while test $# -gt 0; do
         case "$1" in
             --project=*)
-                project=$(echo $1|sed -e 's/^[^=]*=//g')
+                #project=$(echo $1|sed -e 's/^[^=]*=//g')
+                echo "--project option is not needed anymore, as it will be detected"
                 shift
                 ;;
             --action=*)
@@ -163,20 +163,25 @@ do
     # get file version information
     #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
 
-    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path -F value 2>/dev/null))
+    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path,project -F value 2>/tmp/synda.log))
     # if file not found at ESGF
     if [ ${#items[*]} -eq 0 ]; then
         echo "** ERROR **"
         echo "$ncfile"
         echo "NOT found at ESGF"
-        echo -e "(likely all matching datasets have been retracted from ESGF)\n"
+        echo "(likely all matching datasets have been retracted from ESGF)"
+        echo "(or Synda is not corrected configured)"
+        echo "More error message from Synda"
+        echo "****************************"
+        cat /tmp/synda.log
+        echo "****************************"
         continue
     fi
     flag=false
     checksumrs=()
-    for (( n =((${#items[*]}/3)); n>=1; n-- ))  # loop from latest version
+    for (( n =((${#items[*]}/4)); n>=1; n-- ))  # loop from latest version
     do
-        checksumr=${items[($n-1)*3]}    # checksum of remote file
+        checksumr=${items[($n-1)*4+1]}    # checksum of remote file
         # check if sha256sum of the local and remote files match
         if [ "$checksuml" == "$checksumr" ]; then
             flag=true
@@ -216,12 +221,15 @@ do
     fi
 
     # get local dkrz folder structure
-    version=${items[($n-1)*3+1]}
-    local_path=${items[($n-1)*3+2]}
+    project=${items[($n-1)*4]}
+    version=${items[($n-1)*4+2]}
+    local_path=${items[($n-1)*4+3]}
     dkrz=$(dirname $local_path)
 
+    project=$(echo $project | tr "[a-z]" "[A-Z]")
+
     # destination dir
-    if [ $project == "cmip5" ]; then
+    if [ $project == "CMIP5" ]; then
         destdir=$esgf/$dkrz/$varname
     else
         destdir=$esgf/$dkrz
@@ -259,7 +267,11 @@ do
                 for (( i = 0; i < $srcdirlevs-3; i++ )); do
                     upperdir="${upperdir}../"
                 done
-                ln -s ${upperdir}ESGF/$dkrz/$ncfile $fname 
+                if [ $project == "CMIP5" ]; then
+                    ln -s ${upperdir}ESGF/$dkrz/$varname/$ncfile $fname 
+                else
+                    ln -s ${upperdir}ESGF/$dkrz/$ncfile $fname 
+                fi
             fi
         fi
     else
@@ -274,7 +286,7 @@ do
     fi
     if ! $dryrun
     then
-        if [ $project == "cmip5" ]; then
+        if [ $project == "CMIP5" ]; then
             latestversion=$(ls $destdir/../../ |grep -E 'v20[0-9]{6}' |sort |tail -1)
             ln -sfT "$latestversion"  "$destdir/../../latest"
         else
