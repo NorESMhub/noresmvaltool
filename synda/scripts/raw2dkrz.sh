@@ -151,9 +151,7 @@ do
     ncpath=$(dirname $fname)
     ncfile=$(basename $fname)
     varname=$(echo $ncfile |cut -d"_" -f1)
-    # sha256sum of local file
-    checksuml=$(sha256sum $fname |cut -d" " -f1)
-    # sha256sum of remote file.
+    # checksum of remote file.
     #metainfo="$(synda show $ncfile)"
     #checksumr=$(echo "$metainfo" |grep 'checksum' |cut -d" " -f2 2>/dev/null)
     # file information retrieved by synda
@@ -163,7 +161,7 @@ do
     # get file version information
     #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
 
-    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path,project -F value 2>/tmp/synda.log))
+    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log))
     # if file not found at ESGF
     if [ ${#items[*]} -eq 0 ]; then
         echo "** ERROR **"
@@ -179,10 +177,23 @@ do
     fi
     flag=false
     checksumrs=()
-    for (( n =((${#items[*]}/4)); n>=1; n-- ))  # loop from latest version
+    for (( n =((${#items[*]}/5)); n>=1; n-- ))  # loop from latest version
     do
-        checksumr=${items[($n-1)*4+1]}    # checksum of remote file
-        # check if sha256sum of the local and remote files match
+
+        checksumr=${items[($n-1)*5+1]}      # checksum of remote file
+        checksum_type=${items[($n-1)*5+4]}  # checksum type
+        # checksum of local file
+        if [ $checksum_type == "sha256" ]; then
+            checksuml=$(sha256sum $fname |cut -d" " -f1)
+        elif [ $checksum_type == "md5" ]; then
+            checksuml=$(md5sum $fname |cut -d" " -f1)
+        else
+            echo "** ERROR: unknown checksum **"
+            echo "** EXIT                    ** "
+            exit
+        fi
+
+        # if checksum of the local and remote files match
         if [ "$checksuml" == "$checksumr" ]; then
             flag=true
             break
@@ -221,12 +232,11 @@ do
     fi
 
     # get local dkrz folder structure
-    project=${items[($n-1)*4]}
-    version=${items[($n-1)*4+2]}
-    local_path=${items[($n-1)*4+3]}
+    project=$(echo ${items[($n-1)*5]}| tr "[a-z]" "[A-Z]")
+    version=${items[($n-1)*5+2]}
+    local_path=${items[($n-1)*5+3]}
     dkrz=$(dirname $local_path)
 
-    project=$(echo $project | tr "[a-z]" "[A-Z]")
 
     # destination dir
     if [ $project == "CMIP5" ]; then
