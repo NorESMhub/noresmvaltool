@@ -17,17 +17,23 @@ ESMValTool v2.1.1
 
 ## Standard Recipes
 
+The esmvaltool run is timed with the `time` fuction, using configureation files with 1 and 4 compute nodes. This gives some indication about the run time you should expect for each of the reipes, and potential speedup when running on multiple nodes.
+
 ```
+category/directory                    : run time ("*" -- 1n <= 4n)
+  recipe                              :   1 node    :   4 nodes
+------------------------------------------------------------------
+
 examples/
-  examples/recipe_python.yml
+  examples/recipe_python.yml          :   0m44.607s :   0m23.524s
   
-ocean recipes:
-  recipe_ocean_amoc.yml
-  recipe_ocean_bgc.yml
-  recipe_ocean_example.yml
-  recipe_ocean_ice_extent.yml
-  recipe_ocean_Landschuetzer2016.yml
-  recipe_ocean_multimap.yml
-  recipe_ocean_quadmap.yml
-  recipe_ocean_scalar_fields.yml
+ocean diagnostics:
+  recipe_ocean_amoc.yml               :   5m10.653s :   2m39.970s
+  recipe_ocean_bgc.yml                :   3m49.605s :   1m09.870s
+  recipe_ocean_example.yml            :   5m13.925s :   1m46.961s
+  recipe_ocean_ice_extent.yml         :   1m34.831s :   0m29.697s
+  recipe_ocean_Landschuetzer2016.yml  :   0m45.418s :   0m19.065s
+  recipe_ocean_multimap.yml           :   5m09.962s :   5m31.685s *
+  recipe_ocean_quadmap.yml            :   0m13.133s :   0m11.407s
+  recipe_ocean_scalar_fields.yml      :   6m05.351s :   6m20.367s *
 ```
