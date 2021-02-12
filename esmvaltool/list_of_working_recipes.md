@@ -20,13 +20,17 @@ ESMValTool v2.1.1
 The esmvaltool run is timed with the `time` fuction, using configureation files with 1 and 4 compute nodes. This gives some indication about the run time you should expect for each of the reipes, and potential speedup when running on multiple nodes.
 
 ```
-category/directory                    : run time ("*" -- 1n <= 4n)
+CATEGORY/subcategory/directory        : run time ("*" -- 1n <= 4n)
   recipe                              :   1 node    :   4 nodes
 ------------------------------------------------------------------
 
 examples/
   examples/recipe_python.yml          :   0m44.607s :   0m23.524s
-  
+
+=== OCEAN ===
+arctic ocean:
+  recipe_arctic_ocean                 :  40m00.914s :  35m13.035s
+
 ocean diagnostics:
   recipe_ocean_amoc.yml               :   5m10.653s :   2m39.970s
   recipe_ocean_bgc.yml                :   3m49.605s :   1m09.870s
@@ -37,3 +41,18 @@ ocean diagnostics:
   recipe_ocean_quadmap.yml            :   0m13.133s :   0m11.407s
   recipe_ocean_scalar_fields.yml      :   6m05.351s :   6m20.367s *
 ```
+
+
+## Standard recipes -- NorESM
+
+The `standard_recipes_NorESM` folder contain standard esmvaltool that have been modified to use NorESM model data instead of, or in addition to, the default datasets.
+
+```
+CATEGORY/subcategory/directory        : run time ("*" -- 1n <= 4n)
+  recipe                              :   1 node    :   4 nodes
+------------------------------------------------------------------
+
+examples/
+  examples/recipe_python_NorESM.yml   :   1m13.614s :   0m37.579s
+```
+
