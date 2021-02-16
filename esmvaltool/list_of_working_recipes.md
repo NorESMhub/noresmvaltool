@@ -27,6 +27,10 @@ CATEGORY/subcategory/directory        : run time ("*" -- 1n <= 4n)
 examples/
   examples/recipe_python.yml          :   0m44.607s :   0m23.524s
 
+=== ATMOSPHERE ===
+zonal and meridional means:
+  recipe_validation_CMIP6.yml         :   1m11.005s :   0m36.720s
+
 === OCEAN ===
 arctic ocean:
   recipe_arctic_ocean                 :  40m00.914s :  35m13.035s
@@ -54,5 +58,12 @@ CATEGORY/subcategory/directory        : run time ("*" -- 1n <= 4n)
 
 examples/
   examples/recipe_python_NorESM.yml   :   1m13.614s :   0m37.579s
+
+=== OCEAN ===
+ocean diagnostics:
+  recipe_ocean_Landschuetzer2016_NorESM1.yml
+                                      :   1m33.342s :   0m30.915s
+  recipe_ocean_Landschuetzer2016_NorESM2.yml
+                                      :   2m23.186s :   0m49.519s
 ```
 
