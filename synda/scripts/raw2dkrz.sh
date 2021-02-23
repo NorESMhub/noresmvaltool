@@ -110,6 +110,9 @@ if $verbose; then
   echo ""
 fi
 
+[ ! -d /projects/NS9252K/rawdata/autosort/failed ] && \
+    mkdir -p /projects/NS9252K/rawdata/autosort/failed
+
 esgf=/projects/NS9252K/ESGF
 
 pid=$$
@@ -130,7 +133,7 @@ do
             echo -e "   is not NetCDF file! SKIP...\n"
         fi
     elif [ -d $list ]; then
-        find $list -type f -name '*.nc' -print >>/tmp/filelist.$pid
+        find $list -not -path '*/failed/*' -type f -name '*.nc' -print >>/tmp/filelist.$pid
     else
         echo "** WARNING **"
         echo "   $list "
@@ -161,7 +164,7 @@ do
     # get file version information
     #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
 
-    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log))
+    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
     # if file not found at ESGF
     if [ ${#items[*]} -eq 0 ]; then
         echo "** ERROR **"
@@ -171,8 +174,10 @@ do
         echo "(or Synda is not corrected configured)"
         echo "More error message from Synda"
         echo "****************************"
-        cat /tmp/synda.log
+        cat /tmp/synda.log.$pid
         echo "****************************"
+        echo "move $ncfile to failed/ ..."
+        mv $ncfile failed/
         continue
     fi
     flag=false
@@ -188,7 +193,7 @@ do
         elif [ $checksum_type == "md5" ]; then
             checksuml=$(md5sum $fname |cut -d" " -f1)
         else
-            echo "** ERROR: unknown checksum **"
+            echo "** ERROR: unknown checksum_type **"
             echo "** EXIT                    ** "
             exit
         fi
@@ -224,6 +229,9 @@ do
                 echo -e "File is not downloaded sucessfully\n"
                 echo "       "
             fi
+        else
+            echo "move $ncfile to failed/ ..."
+            mv $ncfile failed/
         fi
         # continue, the downloaded file will not moved,
         # but wait until the next time when this is script will be invoked again
@@ -306,6 +314,7 @@ do
     fi
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
+rm -f /tmp/synda.log.$pid
 
 if $verbose; then
   echo "---- Job ends  ---"

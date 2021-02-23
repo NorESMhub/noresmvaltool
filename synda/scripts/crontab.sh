@@ -20,4 +20,4 @@ if [ $njobs1 -ge 1 ] || [ $njobs2 -ge 3 ]; then
     exit
 fi
 
-. /projects/NS9252K/share/synda/scripts/raw2dkrz.sh --action=move --input="/projects/NS9252K/rawdata/autosort" --keeplink=false --overwrite=true --autofix=true --verbose=false &>>/projects/NS9252K/rawdata/logs/$(date +%Y-%m-%d).log
+. /projects/NS9252K/share/synda/scripts/raw2dkrz.sh --action=move --input="/projects/NS9252K/rawdata/autosort" --keeplink=false --overwrite=true --autofix=false --verbose=false &>>/projects/NS9252K/rawdata/logs/$(date +%Y-%m-%d).log
