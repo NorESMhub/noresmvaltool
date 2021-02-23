@@ -30,7 +30,9 @@ max_parallel_tasks: 1
 output_dir: /projects/NS2345K/www/diagnostics/esmvaltool/$USER/tmp
 
 # Auxiliary data directory (used for some additional datasets)
+# Local directory (default) or shared directory (commented)
 auxiliary_data_dir: ./auxiliary_data
+# auxiliary_data_dir: /projects/NS9252K/share/esmvaltool/auxiliary_data
 
 # Diagnostics create plots? [true]/false
 write_plots: true
