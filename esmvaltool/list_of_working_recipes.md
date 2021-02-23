@@ -25,9 +25,16 @@ CATEGORY/subcategory/directory        : run time ("*" -- 1n <= 4n)
 ------------------------------------------------------------------
 
 examples/
+  examples/recipe_correlation.yml     :   0m24.542s :   0m22.781s
+  examples/recipe_extract_shape.yml   :   0m12.944s :   0m13.078s *
+  examples/recipe_ncl.yml             :   0m14.033s :   0m14.276s *
   examples/recipe_python.yml          :   0m44.607s :   0m23.524s
+  examples/recipe_r.yml               :   0m07.698s :   0m07.214s *
 
 === ATMOSPHERE ===
+modes of variability:
+  recipe_modes_of_variability.yml     :   0m43.171s :   0m48.659s *
+
 zonal and meridional means:
   recipe_validation_CMIP6.yml         :   1m11.005s :   0m36.720s
 
@@ -52,18 +59,28 @@ ocean diagnostics:
 The `standard_recipes_NorESM` folder contain standard esmvaltool that have been modified to use NorESM model data instead of, or in addition to, the default datasets.
 
 ```
-CATEGORY/subcategory/directory        : run time ("*" -- 1n <= 4n)
-  recipe                              :   1 node    :   4 nodes
-------------------------------------------------------------------
+CATEGORY/subcategory/directory                      : run time
+  recipe                                            :       (# nodes)
+---------------------------------------------------------------------
 
 examples/
-  examples/recipe_python_NorESM.yml   :   1m13.614s :   0m37.579s
+  examples/recipe_concatenate_exps_NorESM.yml       :   0m59.565s (1)
+  examples/recipe_correlation_NorESM.yml            :   0m51.370s (1)
+  examples/recipe_python_NorESM.yml                 :   1m13.614s (1)
+
+=== ATMOSPHERE ===
+modes of variability:
+  recipe_modes_of_variability_NorESM1.yml           :   0m35.338s (1)
 
 === OCEAN ===
 ocean diagnostics:
-  recipe_ocean_Landschuetzer2016_NorESM1.yml
-                                      :   1m33.342s :   0m30.915s
-  recipe_ocean_Landschuetzer2016_NorESM2.yml
-                                      :   2m23.186s :   0m49.519s
+  recipe_ocean_example_NorESM1.yml                  :  40m09.917s (4)
+  recipe_ocean_example_NorESM2.yml                  :  66m14.705s (4)
+  recipe_ocean_Landschuetzer2016_NorESM1.yml        :   1m33.342s (1)
+  recipe_ocean_Landschuetzer2016_NorESM2.yml        :   2m23.186s (1)
+
+=== OTHER RECIPES ===
+shapeselect:
+  recipe_shapeselect_NorESM.yml                     :   0m21.510s (1)
 ```
 
