@@ -1,5 +1,5 @@
 #!/bin/env bash
-#set -e
+#set -ex
 
 # sort and move downloaded raw cmip5/cmip6 data
 # to DKRZ folder structure under /projects/NS9252K/ESGF
@@ -164,7 +164,7 @@ do
     # get file version information
     #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
 
-    items=($(synda dump -f $ncfile -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+    items=($(synda dump -f $ncfile replica=false -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
     # if file not found at ESGF
     if [ ${#items[*]} -eq 0 ]; then
         echo "** ERROR **"
@@ -176,8 +176,11 @@ do
         echo "****************************"
         cat /tmp/synda.log.$pid
         echo "****************************"
-        echo "move $ncfile to failed/ ..."
-        mv $ncfile failed/
+        if ! $dryrun
+        then
+            echo "move $ncfile to /projects/NS9252K/rawdata/autosort/failed/ ..."
+            mv $ncfile /projects/NS9252K/rawdata/autosort/failed/
+        fi
         continue
     fi
     flag=false
