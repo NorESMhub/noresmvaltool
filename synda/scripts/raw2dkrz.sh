@@ -88,7 +88,7 @@ if [ ! -d ~/.synda ]; then
     echo "Seems this is the first time for you to run Synda"
     echo "Initialize Synda configuration wizard"
     echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
-    echo ""
+    echo " "
     synda check-env
 fi
 # check if configured correctly
@@ -100,14 +100,14 @@ if [ $? -ne 0 ];then
     echo "** WARNING **"
     echo "Synda may not configured correctly"
     echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
-    echo ""
+    echo " "
 fi
 
 if $verbose; then
   echo "--- Job starts ---"
   date
   echo "------------------"
-  echo ""
+  echo " "
 fi
 
 [ ! -d /projects/NS9252K/rawdata/autosort/failed ] && \
@@ -144,10 +144,12 @@ done
 if [ ! -f /tmp/filelist.$pid ]; then
     echo "** WARNING **"
     echo " Noting to move, EXIT"
+    echo " "
     exit
 fi
 
 ## loop through all files
+echo ".................."
 while read -r fname
 do
     # local source file name and variable name
@@ -164,7 +166,13 @@ do
     # get file version information
     #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
 
-    items=($(synda dump -f $ncfile replica=false -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+    for flag in true false
+    do
+        items=($(synda dump -f $ncfile replica=$flag -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+        if [ ${#items[*]} -gt 0 ]; then
+            break
+        fi
+    done
     # if file not found at ESGF
     if [ ${#items[*]} -eq 0 ]; then
         echo "** ERROR **"
@@ -179,11 +187,12 @@ do
         if ! $dryrun
         then
             echo "move $ncfile to /projects/NS9252K/rawdata/autosort/failed/ ..."
-            mv $ncfile /projects/NS9252K/rawdata/autosort/failed/
+            mv $ncpath/$ncfile /projects/NS9252K/rawdata/autosort/failed/
         fi
         continue
     fi
-    flag=false
+    
+    flag=false  # reset flag
     checksumrs=()
     for (( n =((${#items[*]}/5)); n>=1; n-- ))  # loop from latest version
     do
@@ -227,14 +236,12 @@ do
             synda get -q -f --verify_checksum --dest_folder $ncpath $ncfile 1>/dev/null
             if [ $? -eq 0 ]; then
                 echo -e "File is downloaded sucessfully!\n"
-                echo "       "
             else
                 echo -e "File is not downloaded sucessfully\n"
-                echo "       "
             fi
         else
             echo "move $ncfile to failed/ ..."
-            mv $ncfile failed/
+            mv $ncpath/$ncfile failed/
         fi
         # continue, the downloaded file will not moved,
         # but wait until the next time when this is script will be invoked again
@@ -315,6 +322,7 @@ do
             ln -sfT "$latestversion"  "$destdir/../latest"
         fi
     fi
+    echo ".................."
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
 rm -f /tmp/synda.log.$pid
