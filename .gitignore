@@ -1,2 +1,4 @@
 *.log
 *.swp
+esmvaltool/auxiliary_data/
+esmvaltool/standard_recipes
