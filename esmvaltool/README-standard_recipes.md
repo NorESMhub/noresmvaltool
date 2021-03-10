@@ -38,6 +38,10 @@ modes of variability:
 zonal and meridional means:
   recipe_validation_CMIP6.yml         :   1m11.005s :   0m36.720s
 
+=== LAND ===
+runoff, precipitation, evapotranspiration:
+  recipe_runoff_et.yml                :   1m08.433s :   0m55.907s
+
 === OCEAN ===
 arctic ocean:
   recipe_arctic_ocean                 :  40m00.914s :  35m13.035s
@@ -53,6 +57,15 @@ ocean diagnostics:
   recipe_ocean_scalar_fields.yml      :   6m05.351s :   6m20.367s *
 ```
 
+### Recipes that run with reduced set of input files
+
+For some recipes there may be issues with one or more missing input datasets. Normally, esmvaltool will stop executing and return an error if a dataset is not found, but sometimes a recipe will execute if missing datasets are skipped. This is done by executing ``esmvaltool run --skip_nonexistent=True <config_file> <recipe>``.
+
+```
+=== OTHER RECIPES ===
+ensemble clustering:
+  recipe_ensclus.yml  : 2021-03-08 : Skipping CanESM2 
+```
 
 ## Standard recipes -- NorESM
 
