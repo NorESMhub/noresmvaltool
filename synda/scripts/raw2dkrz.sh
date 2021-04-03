@@ -34,7 +34,7 @@ else
     overwrite=true
     autofix=true
     verbose=true
-    input=/projects/NS9252K/rawdata/model
+    input=/projects/NS9252K/rawdata/autosort
     while test $# -gt 0; do
         case "$1" in
             --project=*)
@@ -149,9 +149,9 @@ if [ ! -f /tmp/filelist.$pid ]; then
 fi
 
 ## loop through all files
-echo ".................."
 while read -r fname
 do
+    echo ".................."
     # local source file name and variable name
     ncpath=$(dirname $fname)
     ncfile=$(basename $fname)
@@ -326,6 +326,12 @@ do
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
 rm -f /tmp/synda.log.$pid
+
+# cleanup empty folders
+if [ $input == "/projects/NS9252K/rawdata/autosort" ]
+then
+    find $input -empty -type d -print -delete
+fi
 
 if $verbose; then
   echo "---- Job ends  ---"
