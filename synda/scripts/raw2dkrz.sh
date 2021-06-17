@@ -240,8 +240,8 @@ do
                 echo -e "File is not downloaded sucessfully\n"
             fi
         else
-            echo "move $ncfile to failed/ ..."
-            mv $ncpath/$ncfile failed/
+            echo "move $ncfile to /projects/NS9252K/rawdata/autosort/failed/ ..."
+            mv $ncpath/$ncfile /projects/NS9252K/rawdata/autosort/failed/
         fi
         # continue, the downloaded file will not moved,
         # but wait until the next time when this is script will be invoked again
