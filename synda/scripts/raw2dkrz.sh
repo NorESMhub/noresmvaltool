@@ -166,12 +166,15 @@ do
     # get file version information
     #version=$(echo $fileremote |awk -F. '{print $(NF-2)}')
 
-    for flag in true false
+    for flag1 in true false
     do
-        items=($(synda dump -f $ncfile replica=$flag -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
-        if [ ${#items[*]} -gt 0 ]; then
-            break
-        fi
+        for flag2 in true false
+        do
+            items=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+            if [ ${#items[*]} -gt 0 ]; then
+                break
+            fi
+        done
     done
     # if file not found at ESGF
     if [ ${#items[*]} -eq 0 ]; then
@@ -198,7 +201,7 @@ do
     do
 
         checksumr=${items[($n-1)*5+1]}      # checksum of remote file
-        checksum_type=${items[($n-1)*5+4]}  # checksum type
+        checksum_type=${items[($n-1)*5+2]}  # checksum type
         # checksum of local file
         if [ $checksum_type == "sha256" ]; then
             checksuml=$(sha256sum $fname |cut -d" " -f1)
@@ -251,8 +254,8 @@ do
 
     # get local dkrz folder structure
     project=$(echo ${items[($n-1)*5]}| tr "[a-z]" "[A-Z]")
-    version=${items[($n-1)*5+2]}
-    local_path=${items[($n-1)*5+3]}
+    version=${items[($n-1)*5+3]}
+    local_path=${items[($n-1)*5+4]}
     dkrz=$(dirname $local_path)
 
 
@@ -266,8 +269,8 @@ do
     # move file to dkrz folder structure
     umask 002
     ! $dryrun && [ ! -d $destdir ] && mkdir -p $destdir
-    chmod g+s $destdir
-    if [ -f $destdir/$ncfile ]; then
+    ! $dryrun && [ $(stat -c '%a' $destdir) -ne 2775 ] && chmod g+s $destdir
+    if ! $dryrun && [ -f $destdir/$ncfile ]; then
         if $overwrite; then
             rm -f $destdir/$ncfile
         else
