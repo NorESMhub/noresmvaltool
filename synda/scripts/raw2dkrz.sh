@@ -136,8 +136,9 @@ do
         find $list -not -path '*/failed/*' -type f -name '*.nc' -print >>/tmp/filelist.$pid
     else
         echo "** WARNING **"
-        echo "   $list "
-        echo -e "does not exist! SKIP...\n"
+        echo " $list "
+        echo "does not exist!"
+        echo -e "** SKIP **\n"
     fi
 done
 
@@ -170,14 +171,22 @@ do
     do
         for flag2 in true false
         do
-            items=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
-            if [ ${#items[*]} -gt 0 ]; then
+            #items=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+            project=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C project -F value 2>/tmp/synda.log.$pid))
+            if [ $project ]; then
+                checksumr=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value 2>/tmp/synda.log.$pid))
+                checksum_type=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value 2>/tmp/synda.log.$pid))
+                dataset_version=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value 2>/tmp/synda.log.$pid))
+                local_path=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value 2>/tmp/synda.log.$pid))
                 break
             fi
         done
+        if [ $project ]; then
+            break
+        fi
     done
     # if file not found at ESGF
-    if [ ${#items[*]} -eq 0 ]; then
+    if [ -z $project ]; then
         echo "** ERROR **"
         echo "$ncfile"
         echo "NOT found at ESGF"
@@ -195,13 +204,6 @@ do
         continue
     fi
     
-    flag=false  # reset flag
-    checksumrs=()
-    for (( n =((${#items[*]}/5)); n>=1; n-- ))  # loop from latest version
-    do
-
-        checksumr=${items[($n-1)*5+1]}      # checksum of remote file
-        checksum_type=${items[($n-1)*5+2]}  # checksum type
         # checksum of local file
         if [ $checksum_type == "sha256" ]; then
             checksuml=$(sha256sum $fname |cut -d" " -f1)
@@ -209,19 +211,11 @@ do
             checksuml=$(md5sum $fname |cut -d" " -f1)
         else
             echo "** ERROR: unknown checksum_type **"
-            echo "** EXIT                    ** "
-            exit
+            echo "** SKIP $fname                  ** "
         fi
 
         # if checksum of the local and remote files match
-        if [ "$checksuml" == "$checksumr" ]; then
-            flag=true
-            break
-        fi
-        checksumrs+=($checksumr)
-    done
-    if ! $flag
-    then
+        if [ "$checksuml" != "$checksumr" ]; then
         echo "** ERROR **"
         echo " Checksum of local file:"
         echo " $ncfile "
@@ -230,7 +224,8 @@ do
         echo "checksum local:"
         echo "$checksuml"
         echo "checksum remote:"
-        echo "${checksumrs[*]}" |sed 's/ /\n/g'
+        #echo "${checksumrs[*]}" |sed 's/ /\n/g'
+        echo "$checksumr"
         echo ""
 
         if $autofix
@@ -253,9 +248,6 @@ do
     fi
 
     # get local dkrz folder structure
-    project=$(echo ${items[($n-1)*5]}| tr "[a-z]" "[A-Z]")
-    version=${items[($n-1)*5+3]}
-    local_path=${items[($n-1)*5+4]}
     dkrz=$(dirname $local_path)
 
 
@@ -331,9 +323,9 @@ rm -f /tmp/filelist.$pid
 rm -f /tmp/synda.log.$pid
 
 # cleanup empty folders
-if [ $input == "/projects/NS9252K/rawdata/autosort" ]
+if [ "$input" == "/projects/NS9252K/rawdata/autosort" ]
 then
-    find $input -empty -type d -print -delete
+    find "$input" -empty -type d -print -delete
 fi
 
 if $verbose; then
