@@ -20,11 +20,19 @@ if [ $njobs1 -ge 1 ] || [ $njobs2 -ge 3 ]; then
     exit
 fi
 
-. /projects/NS9252K/share/synda/scripts/raw2dkrz.sh \
+logpath=/projects/NS9252K/rawdata/logs
+logfile=$(date +%Y-%m-%d).log
+touch $logpath/$logfile
+[ stat -c "%a" $logfile -ne 664 ] && chmod 664 $logfile
+
+/projects/NS9252K/share/synda/scripts/raw2dkrz.sh \
     --action=move \
     --input="/projects/NS9252K/rawdata/autosort" \
     --keeplink=false \
     --overwrite=true \
-    --autofix=true \
+    --autofix=false \
     --verbose=false \
-    &>>/projects/NS9252K/rawdata/logs/$(date +%Y-%m-%d).log
+    &>>$logpath/$logfile
+
+# remove log files older than 30 days
+find $logpath -ctime +30 -ls -exec rm -f {} \;

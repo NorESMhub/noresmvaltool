@@ -23,11 +23,14 @@ then
 fi
 
 # add file group write permission
-find $1 -type f -user $USER ! -perm -g=w -ls -exec chmod g+w {} \; |tee -a $logfile
+find $1 -type f -user $USER ! -perm -g=w ! -name 'README' -ls -exec chmod g+w {} \; |tee -a $logfile
 
 # add folder group writeable permission
 find $1 -type d -user $USER -name '[[:alnum:]]*' ! -perm 2775 -ls -exec chmod g+w {} \; | tee -a $logfile
 
 # change group of files and folders to ns9252k
 find $1 -user $USER ! -group ns9252k -ls -exec chown $USER:ns9252k {} \; | tee -a $logfile
+
+# find core dump files
+find $1 -type f -user $USER -name 'core.*' -ls -delete |tee -a $logfile
 

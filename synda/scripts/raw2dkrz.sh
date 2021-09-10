@@ -1,5 +1,5 @@
 #!/bin/env bash
-#set -ex
+#set -e
 
 # sort and move downloaded raw cmip5/cmip6 data
 # to DKRZ folder structure under /projects/NS9252K/ESGF
@@ -79,7 +79,7 @@ else
     done
 fi
 
-alias synda=/projects/NS9252K/conda/synda/bin/synda
+synda=/projects/NS9252K/conda/synda/bin/synda
 if [ -z $ST_HOME ];then
     export ST_HOME=${HOME}/.synda
 fi
@@ -89,13 +89,13 @@ if [ ! -d ~/.synda ]; then
     echo "Initialize Synda configuration wizard"
     echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
     echo " "
-    synda check-env
+    $synda check-env
 fi
 # check if configured correctly
 # alternative file for test cfc12global_Amon_CESM2_historical_r11i1p1f1_gn_200001-201412.nc
 #synda get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
 # (synda get may fail for not subscribing to role/group?)
-synda dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+$synda dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
 if [ $? -ne 0 ];then
     echo "** WARNING **"
     echo "Synda may not configured correctly"
@@ -171,13 +171,13 @@ do
     do
         for flag2 in true false
         do
-            #items=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
-            project=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C project -F value 2>/tmp/synda.log.$pid))
+            #items=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+            project=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C project -F value 2>/tmp/synda.log.$pid))
             if [ $project ]; then
-                checksumr=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value 2>/tmp/synda.log.$pid))
-                checksum_type=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value 2>/tmp/synda.log.$pid))
-                dataset_version=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value 2>/tmp/synda.log.$pid))
-                local_path=($(synda dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value 2>/tmp/synda.log.$pid))
+                checksumr=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value 2>/tmp/synda.log.$pid))
+                checksum_type=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value 2>/tmp/synda.log.$pid))
+                dataset_version=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value 2>/tmp/synda.log.$pid))
+                local_path=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value 2>/tmp/synda.log.$pid))
                 break
             fi
         done
@@ -231,7 +231,7 @@ do
         if $autofix
         then
             echo "** The latest version will be downloaded! **"
-            synda get -q -f --verify_checksum --dest_folder $ncpath $ncfile 1>/dev/null
+            $synda get -q -f --verify_checksum --dest_folder $ncpath $ncfile 1>/dev/null
             if [ $? -eq 0 ]; then
                 echo -e "File is downloaded sucessfully!\n"
             else
@@ -260,8 +260,16 @@ do
 
     # move file to dkrz folder structure
     umask 002
-    ! $dryrun && [ ! -d $destdir ] && mkdir -p $destdir
-    ! $dryrun && [ $(stat -c '%a' $destdir) -ne 2775 ] && chmod g+s $destdir
+    if [ ! $dryrun ]; then
+        if [ ! -d $destdir ]; then
+            mkdir -p $destdir
+            [ $? -ne 0 ] && echo "** ERROR MAKING DIRECTORY $destdir, EXIT **" && continue
+        fi
+        if [ $(stat -c '%a' $destdir) -ne 2775 ]; then
+            chmod g+s $destdir
+            [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir, EXIT **" && continue
+        fi
+    fi
     if ! $dryrun && [ -f $destdir/$ncfile ]; then
         if $overwrite; then
             rm -f $destdir/$ncfile
@@ -279,6 +287,7 @@ do
             echo -e "mv -v $fname $destdir/$ncfile.\n"
         else
             mv -v $fname $destdir/$ncfile
+            [ $? -ne 0 ] && echo "** ERROR MOVING FILE, EXIT **" && continue
             [ $(stat -c '%a' $destdir/$ncfile) -ne 664 ] && chmod 644 $destdir/$ncfile
             [ $(stat -c '%G' $destdir/$ncfile) != 'ns9252k' ] && chown $USER:ns9252k $destdir/$ncfile
             # make a softlink back in the source folder
@@ -302,7 +311,10 @@ do
         then
             echo "** DRY RUN **"
         else
-            [ ! -d $destdir ] && mkdir -p $destdir
+            if [ ! -d $destdir ]; then
+                mkdir -p $destdir
+                [ $? -ne 0 ] && echo "** ERROR MAKING DIRECTORY, EXIT **" && continue
+            fi
             ln $fname $destdir/$ncfile
         fi
         echo -e "ln $fname $destdir/$ncfile\n"
