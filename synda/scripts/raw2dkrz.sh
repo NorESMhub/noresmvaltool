@@ -269,6 +269,9 @@ do
             chmod g+s $destdir
             [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir, EXIT **" && continue
         fi
+        if [ $(stat -c '%G' $destdir/$ncfile) != 'ns9252k' ]; then
+            chgrp ns9252k $destdir/$ncfile
+        fi
     fi
     if ! $dryrun && [ -f $destdir/$ncfile ]; then
         if $overwrite; then
@@ -289,7 +292,7 @@ do
             mv -v $fname $destdir/$ncfile
             [ $? -ne 0 ] && echo "** ERROR MOVING FILE, EXIT **" && continue
             [ $(stat -c '%a' $destdir/$ncfile) -ne 664 ] && chmod 644 $destdir/$ncfile
-            [ $(stat -c '%G' $destdir/$ncfile) != 'ns9252k' ] && chown $USER:ns9252k $destdir/$ncfile
+            [ $(stat -c '%G' $destdir/$ncfile) != 'ns9252k' ] && chgrp ns9252k $destdir/$ncfile
             # make a softlink back in the source folder
             if $keeplink && [ $? -eq 0 ]
             then
