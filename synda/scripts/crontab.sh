@@ -23,14 +23,14 @@ fi
 logpath=/projects/NS9252K/rawdata/logs
 logfile=$(date +%Y-%m-%d).log
 touch $logpath/$logfile
-[ stat -c "%a" $logfile -ne 664 ] && chmod 664 $logfile
+[ $(stat -c "%a" $logpath/$logfile) -ne 664 ] && chmod 664 $logpath/$logfile
 
 /projects/NS9252K/share/synda/scripts/raw2dkrz.sh \
     --action=move \
     --input="/projects/NS9252K/rawdata/autosort" \
     --keeplink=false \
     --overwrite=true \
-    --autofix=false \
+    --autofix=true \
     --verbose=false \
     &>>$logpath/$logfile
 

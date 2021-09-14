@@ -1,5 +1,5 @@
 #!/bin/env bash
-#set -e
+#set -ex
 
 # sort and move downloaded raw cmip5/cmip6 data
 # to DKRZ folder structure under /projects/NS9252K/ESGF
@@ -95,7 +95,8 @@ fi
 # alternative file for test cfc12global_Amon_CESM2_historical_r11i1p1f1_gn_200001-201412.nc
 #synda get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
 # (synda get may fail for not subscribing to role/group?)
-$synda dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+#$synda dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+$synda dump areacello_Ofx_MPI-ESM1-2-LR_historical_r1i1p1f1_gn.nc &>/dev/null
 if [ $? -ne 0 ];then
     echo "** WARNING **"
     echo "Synda may not configured correctly"
@@ -260,7 +261,7 @@ do
 
     # move file to dkrz folder structure
     umask 002
-    if [ ! $dryrun ]; then
+    if ! $dryrun; then
         if [ ! -d $destdir ]; then
             mkdir -p $destdir
             [ $? -ne 0 ] && echo "** ERROR MAKING DIRECTORY $destdir, EXIT **" && continue
@@ -268,9 +269,6 @@ do
         if [ $(stat -c '%a' $destdir) -ne 2775 ]; then
             chmod g+s $destdir
             [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir, EXIT **" && continue
-        fi
-        if [ $(stat -c '%G' $destdir/$ncfile) != 'ns9252k' ]; then
-            chgrp ns9252k $destdir/$ncfile
         fi
     fi
     if ! $dryrun && [ -f $destdir/$ncfile ]; then
