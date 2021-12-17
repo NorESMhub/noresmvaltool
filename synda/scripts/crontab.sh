@@ -10,7 +10,8 @@
 #|     |     +--------- day of month (1 - 31)
 #|     +----------- hour (0 - 23)
 #+------------- min (0 - 59)
-#0,30   *     *   *    *        . /projects/NS9252K/share/synda/scripts/crontab.sh
+#MAILTO="yanchun.he@nersc.no"
+#0,30   *     *   *    *        . /cluster/shared/ESGF/software/noresmvaltool/synda/scripts/crontab.sh
 
 njobs1=$(ps x |grep -v 'grep' |grep -c 'raw2dkrz.sh')
 njobs2=$(ps x |grep -v 'grep' |grep -c 'crontab.sh')
@@ -20,14 +21,14 @@ if [ $njobs1 -ge 1 ] || [ $njobs2 -ge 3 ]; then
     exit
 fi
 
-logpath=/projects/NS9252K/rawdata/logs
+logpath=/cluster/shared/ESGF/rawdata/logs
 logfile=$(date +%Y-%m-%d).log
 touch $logpath/$logfile
 [ $(stat -c "%a" $logpath/$logfile) -ne 664 ] && chmod 664 $logpath/$logfile
 
-/projects/NS9252K/share/synda/scripts/raw2dkrz.sh \
+/cluster/shared/ESGF/software/noresmvaltool/synda/scripts/raw2dkrz.sh \
     --action=move \
-    --input="/projects/NS9252K/rawdata/autosort" \
+    --input="/cluster/shared/ESGF/rawdata/autosort" \
     --keeplink=false \
     --overwrite=true \
     --autofix=true \

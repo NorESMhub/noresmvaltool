@@ -2,8 +2,8 @@
 #set -ex
 
 # sort and move downloaded raw cmip5/cmip6 data
-# to DKRZ folder structure under /projects/NS9252K/ESGF
-# yanchun.he@nersc.no; last update: 2020.09.11
+# to DKRZ folder structure under /cluster/shared/ESGF
+# yanchun.he@nersc.no; last update: 2021.12.17
 
 if [ $# -eq 0 ] || [ $1 == "-h" ] || [ $1 == "--help" ]
 then
@@ -11,7 +11,7 @@ then
     printf "Usage:\n"
     printf 'raw2dkrz.sh
         --input=["files or/and folders patterns"]
-                                    : (optional) default to /projects/NS9252K/rawdata/model;
+                                    : (optional) default to /cluster/shared/ESGF/rawdata/autosort;
                                       file or/and folder/path patterns (use " " for matching patters)
         --action=[move|link]        : (optional) default move; move the file or hard link the file
         --keeplink=[true|false]     : (optional); default false; only applies when --action==move
@@ -34,7 +34,7 @@ else
     overwrite=true
     autofix=true
     verbose=true
-    input=/projects/NS9252K/rawdata/autosort
+    input=/cluster/shared/ESGF/rawdata/autosort
     while test $# -gt 0; do
         case "$1" in
             --project=*)
@@ -79,7 +79,7 @@ else
     done
 fi
 
-synda=/projects/NS9252K/conda/synda/bin/synda
+SYNDA=/cluster/shared/ESGF/software/synda/bin/synda
 if [ -z $ST_HOME ];then
     export ST_HOME=${HOME}/.synda
 fi
@@ -89,14 +89,14 @@ if [ ! -d ~/.synda ]; then
     echo "Initialize Synda configuration wizard"
     echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
     echo " "
-    $synda check-env
+    $SYNDA check-env
 fi
 # check if configured correctly
 # alternative file for test cfc12global_Amon_CESM2_historical_r11i1p1f1_gn_200001-201412.nc
-#synda get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
-# (synda get may fail for not subscribing to role/group?)
-#$synda dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
-$synda dump areacello_Ofx_MPI-ESM1-2-LR_historical_r1i1p1f1_gn.nc &>/dev/null
+# $SYNDA get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+# ($SYNDA get may fail for not subscribing to role/group?)
+# $SYNDA dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
+$SYNDA dump areacello_Ofx_MPI-ESM1-2-LR_historical_r1i1p1f1_gn.nc &>/dev/null
 if [ $? -ne 0 ];then
     echo "** WARNING **"
     echo "Synda may not configured correctly"
@@ -111,10 +111,10 @@ if $verbose; then
   echo " "
 fi
 
-[ ! -d /projects/NS9252K/rawdata/autosort/failed ] && \
-    mkdir -p /projects/NS9252K/rawdata/autosort/failed
+#[ ! -d /cluster/shared/ESGF/rawdata/autosort/failed ] && \
+    #mkdir -p /cluster/shared/ESGF/rawdata/autosort/failed
 
-esgf=/projects/NS9252K/ESGF
+ESGF=/cluster/shared/ESGF
 
 pid=$$
 ## generate filelist of all matching files
@@ -172,13 +172,13 @@ do
     do
         for flag2 in true false
         do
-            #items=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
-            project=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C project -F value 2>/tmp/synda.log.$pid))
+            #items=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
+            project=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C project -F value 2>/tmp/synda.log.$pid))
             if [ $project ]; then
-                checksumr=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value 2>/tmp/synda.log.$pid))
-                checksum_type=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value 2>/tmp/synda.log.$pid))
-                dataset_version=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value 2>/tmp/synda.log.$pid))
-                local_path=($($synda dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value 2>/tmp/synda.log.$pid))
+                checksumr=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value 2>/tmp/synda.log.$pid))
+                checksum_type=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value 2>/tmp/synda.log.$pid))
+                dataset_version=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value 2>/tmp/synda.log.$pid))
+                local_path=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value 2>/tmp/synda.log.$pid))
                 break
             fi
         done
@@ -199,8 +199,8 @@ do
         echo "****************************"
         if ! $dryrun
         then
-            echo "move $ncfile to /projects/NS9252K/rawdata/autosort/failed/ ..."
-            mv $ncpath/$ncfile /projects/NS9252K/rawdata/autosort/failed/
+            echo "move $ncfile to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
+            mv $ncpath/$ncfile /cluster/shared/ESGF/rawdata/autosort/failed/
         fi
         continue
     fi
@@ -232,15 +232,15 @@ do
         if $autofix
         then
             echo "** The latest version will be downloaded! **"
-            $synda get -q -f --verify_checksum --dest_folder $ncpath $ncfile 1>/dev/null
+            $SYNDA get -q -f --verify_checksum --dest_folder $ncpath $ncfile 1>/dev/null
             if [ $? -eq 0 ]; then
                 echo -e "File is downloaded sucessfully!\n"
             else
                 echo -e "File is not downloaded sucessfully\n"
             fi
         else
-            echo "move $ncfile to /projects/NS9252K/rawdata/autosort/failed/ ..."
-            mv $ncpath/$ncfile /projects/NS9252K/rawdata/autosort/failed/
+            echo "move $ncfile to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
+            mv $ncpath/$ncfile /cluster/shared/ESGF/rawdata/autosort/failed/
         fi
         # continue, the downloaded file will not moved,
         # but wait until the next time when this is script will be invoked again
@@ -254,9 +254,9 @@ do
 
     # destination dir
     if [ $project == "CMIP5" ]; then
-        destdir=$esgf/$dkrz/$varname
+        destdir=$ESGF/$dkrz/$varname
     else
-        destdir=$esgf/$dkrz
+        destdir=$ESGF/$dkrz
     fi
 
     # move file to dkrz folder structure
@@ -334,9 +334,11 @@ do
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
 rm -f /tmp/synda.log.$pid
+rm -f /tmp/filelist.*
+rm -f /tmp/synda.log.*
 
 # cleanup empty folders
-if [ "$input" == "/projects/NS9252K/rawdata/autosort" ]
+if [ "$input" == "/cluster/shared/ESGF/rawdata/autosort" ]
 then
     find "$input" -empty -type d -print -delete
 fi
