@@ -11,7 +11,7 @@
 #|     +----------- hour (0 - 23)
 #+------------- min (0 - 59)
 #MAILTO="yanchun.he@nersc.no"
-#0,30   *     *   *    *        . /cluster/shared/ESGF/software/noresmvaltool/synda/scripts/crontab.sh
+#0,30   *     *   *    *        . /cluster/shared/ESGF/software/noresmvaltool/synda/scripts/crontab.sh  >/dev/null 2>&1
 
 njobs1=$(ps x |grep -v 'grep' |grep -c 'raw2dkrz.sh')
 njobs2=$(ps x |grep -v 'grep' |grep -c 'crontab.sh')

@@ -1,5 +1,5 @@
 #!/bin/env bash
-set -e
+#set -e
 
 # loop all the subfolders to link the latest version to latest
 # yanchun.he@nersc.no
