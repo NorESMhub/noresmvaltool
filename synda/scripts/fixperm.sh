@@ -25,7 +25,7 @@ fi
 # add file group write permission
 find $1 -type f -user $USER ! -perm -g=w ! -name 'README' -ls -exec chmod g+w {} \; |tee -a $logfile
 
-# add folder group writeable permission
+# add folder group write permission
 find $1 -type d -user $USER -name '[[:alnum:]]*' ! -perm 2775 -ls -exec chmod g+w {} \; | tee -a $logfile
 
 # change group of files and folders to ns9252k

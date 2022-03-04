@@ -111,8 +111,8 @@ if $verbose; then
   echo " "
 fi
 
-#[ ! -d /cluster/shared/ESGF/rawdata/autosort/failed ] && \
-    #mkdir -p /cluster/shared/ESGF/rawdata/autosort/failed
+[ ! -d /cluster/shared/ESGF/rawdata/autosort/failed ] && \
+    mkdir -p /cluster/shared/ESGF/rawdata/autosort/failed
 
 ESGF=/cluster/shared/ESGF
 
@@ -260,17 +260,18 @@ do
     fi
 
     # move file to dkrz folder structure
-    umask 002
+    umask 022
     if ! $dryrun; then
         if [ ! -d $destdir ]; then
             mkdir -p $destdir
             [ $? -ne 0 ] && echo "** ERROR MAKING DIRECTORY $destdir, EXIT **" && continue
         fi
-        if [ $(stat -c '%a' $destdir) -ne 2775 ]; then
-            chmod g+s $destdir
+        if [ $(stat -c '%a' $destdir) -ne 2755 ]; then
+            chmod 2755 $destdir
             [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir, EXIT **" && continue
         fi
     fi
+    umask 002
     if ! $dryrun && [ -f $destdir/$ncfile ]; then
         if $overwrite; then
             rm -f $destdir/$ncfile
@@ -289,10 +290,16 @@ do
         else
             mv -v $fname $destdir/$ncfile
             [ $? -ne 0 ] && echo "** ERROR MOVING FILE, EXIT **" && continue
-            [ $(stat -c '%a' $destdir/$ncfile) -ne 664 ] && chmod 644 $destdir/$ncfile
-            [ $(stat -c '%G' $destdir/$ncfile) != 'ns9252k' ] && chgrp ns9252k $destdir/$ncfile
+            if [ $(stat -c '%a' $destdir/$ncfile) -ne 664 ]; then
+                chmod 644 $destdir/$ncfile
+                [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir/$ncfile, CONTINUE **" && continue
+            fi
+            if [ $(stat -c '%g' $destdir/$ncfile) -ne 219252 ]; then
+                chgrp 219252 $destdir/$ncfile
+                [ $? -ne 0 ] && echo "** ERROR CHANGING GROUP $destdir/$ncfile, CONTINUE **" && continue
+            fi
             # make a softlink back in the source folder
-            if $keeplink && [ $? -eq 0 ]
+            if $keeplink
             then
                 srcdirlevs=$(dirname $fname |awk -F/ '{print NF}')
                 # upper dirs excluding /projects/NS9252K
@@ -312,10 +319,6 @@ do
         then
             echo "** DRY RUN **"
         else
-            if [ ! -d $destdir ]; then
-                mkdir -p $destdir
-                [ $? -ne 0 ] && echo "** ERROR MAKING DIRECTORY, EXIT **" && continue
-            fi
             ln $fname $destdir/$ncfile
         fi
         echo -e "ln $fname $destdir/$ncfile\n"
@@ -330,7 +333,7 @@ do
             ln -sfT "$latestversion"  "$destdir/../latest"
         fi
     fi
-    echo ".................."
+    #echo ".................."
 done < /tmp/filelist.$pid
 rm -f /tmp/filelist.$pid
 rm -f /tmp/synda.log.$pid
