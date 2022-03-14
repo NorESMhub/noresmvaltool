@@ -267,7 +267,11 @@ do
             [ $? -ne 0 ] && echo "** ERROR MAKING DIRECTORY $destdir, EXIT **" && continue
         fi
         if [ $(stat -c '%a' $destdir) -ne 2755 ]; then
-            chmod 2755 $destdir
+            fld=$destdir
+            while [[ $fld != "/cluster/shared/ESGF" ]]; do
+                [ $(stat -c '%a' $fld) -ne 2755 ] && chmod 2755 $fld
+                fld=$(dirname "$fld");
+            done
             [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir, EXIT **" && continue
         fi
     fi
