@@ -96,13 +96,13 @@ fi
 # $SYNDA get -f -d /tmp  orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
 # ($SYNDA get may fail for not subscribing to role/group?)
 # $SYNDA dump orog_fx_NorESM2-LM_historical_r1i1p1f1_gn.nc &>/dev/null
-$SYNDA dump areacello_Ofx_MPI-ESM1-2-LR_historical_r1i1p1f1_gn.nc &>/dev/null
-if [ $? -ne 0 ];then
-    echo "** WARNING **"
-    echo "Synda may not configured correctly"
-    echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
-    echo " "
-fi
+#$SYNDA dump areacello_Ofx_MPI-ESM1-2-LR_historical_r1i1p1f1_gn.nc &>/dev/null
+#if [ $? -ne 0 ];then
+    #echo "** WARNING **"
+    #echo "Synda may not configured correctly"
+    #echo "Find out more information: https://github.com/orgs/NorESMhub/teams/esmvaltool-on-nird/discussions/5"
+    #echo " "
+#fi
 
 if $verbose; then
   echo "--- Job starts ---"
@@ -292,16 +292,31 @@ do
             echo "** DRY RUN **"
             echo -e "mv -v $fname $destdir/$ncfile.\n"
         else
-            mv -v $fname $destdir/$ncfile
+            flag=true
+            if [ $(stat -c '%a' $fname) -ne 664 ]; then
+                chmod 644 $fname
+                if [ $? -ne 0 ];then
+                    echo "** ERROR CHANGING PERMISSION AS -rw-rw-r-- **"
+                    echo "REMEMBER TO USE 'move2autosort.sh' TO MOVE DATA (SEE README)"
+                    echo "MOVE $fname to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
+                    mv $fname /cluster/shared/ESGF/rawdata/autosort/failed/
+                    flag=false
+                    continue
+                fi
+            fi
+            if [ $(stat -c '%g' $fname) -ne 219252 ]; then
+                chgrp 219252 $fname
+                if [ $? -ne 0 ];then
+                    echo "** ERROR CHANGING GROUP AS 9252K **"
+                    echo "REMEMBER TO USE 'move2autosort.sh' TO MOVE DATA (SEE README)"
+                    echo "MOVE $fname to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
+                    mv $fname /cluster/shared/ESGF/rawdata/autosort/failed/
+                    flag=false
+                    continue
+                fi
+            fi
+            $flag && mv -v $fname $destdir/$ncfile
             [ $? -ne 0 ] && echo "** ERROR MOVING FILE, EXIT **" && continue
-            if [ $(stat -c '%a' $destdir/$ncfile) -ne 664 ]; then
-                chmod 644 $destdir/$ncfile
-                [ $? -ne 0 ] && echo "** ERROR CHANGING PERMISSION $destdir/$ncfile, CONTINUE **" && continue
-            fi
-            if [ $(stat -c '%g' $destdir/$ncfile) -ne 219252 ]; then
-                chgrp 219252 $destdir/$ncfile
-                [ $? -ne 0 ] && echo "** ERROR CHANGING GROUP $destdir/$ncfile, CONTINUE **" && continue
-            fi
             # make a softlink back in the source folder
             if $keeplink
             then
@@ -339,10 +354,8 @@ do
     fi
     #echo ".................."
 done < /tmp/filelist.$pid
-rm -f /tmp/filelist.$pid
-rm -f /tmp/synda.log.$pid
-rm -f /tmp/filelist.*
-rm -f /tmp/synda.log.*
+find /tmp/ -maxdepth 1 -type f -name 'filelist.*' -user $USER -delete
+find /tmp/ -maxdepth 1 -type f -name 'synda.log.*' -user $USER -delete
 
 # cleanup empty folders
 if [ "$input" == "/cluster/shared/ESGF/rawdata/autosort" ]
