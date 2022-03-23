@@ -360,7 +360,16 @@ find /tmp/ -maxdepth 1 -type f -name 'synda.log.*' -user $USER -delete
 # cleanup empty folders
 if [ "$input" == "/cluster/shared/ESGF/rawdata/autosort" ]
 then
-    find "$input" -empty -type d -print -delete
+    files=($(find "$input" -type f ! -iname "*.nc" ! -iname "README" -print -quit))
+    if [ ${#files[*]} -eq 1 ];then
+        echo "Clean up non-NetCDF files:"
+        find "$input" -type f ! -iname "*.nc" ! -iname "README" -print -delete
+    fi
+    folders=($(find "$input" -empty -type d -print -quit))
+    if [ ${#folders[*]} -eq 1 ];then
+        echo "Clean up empty folders:"
+        find "$input" -empty -type d -print -delete
+    fi
 fi
 
 if $verbose; then
