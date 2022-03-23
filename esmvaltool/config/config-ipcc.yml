@@ -5,12 +5,12 @@
 
 # Rootpaths to the data from different projects (lists are also possible)
 rootpath:
-  CMIP5: [/projects/NS9252K/ESGF/cmip5/output1, /projects/NS9034K/CMIP5/output1]
-  CMIP6: [/projects/NS9252K/ESGF/CMIP6, /projects/NS9034K/CMIP6]
+  CMIP5: [/projects/NS9252K/ESGF_betzy/cmip5/output1, /projects/NS9034K/CMIP5/output1]
+  CMIP6: [/projects/NS9252K/ESGF_betzy/CMIP6, /projects/NS9034K/CMIP6]
   OBS: /projects/NS9252K/obsdata
   OBS6: /projects/NS9252K/obsdata
-  obs4mips: /projects/NS9252K/obsdata
-  RAWOBS: /projects/NS9252K/rawdata/obs
+  obs4mips: /projects/NS9252K/ESGF_betzy/obs4MIPs
+  RAWOBS: /projects/NS9252K/ESGF_betzy/rawdata/obs
   default: ~/obsdata
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc
