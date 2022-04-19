@@ -25,6 +25,7 @@ logpath=/cluster/shared/ESGF/rawdata/logs
 logfile=$(date +%Y-%m-%d).log
 touch $logpath/$logfile
 [ $(stat -c "%a" $logpath/$logfile) -ne 664 ] && chmod 664 $logpath/$logfile
+umask 0022
 
 /cluster/shared/ESGF/software/noresmvaltool/synda/scripts/raw2dkrz.sh \
     --action=move \
@@ -35,5 +36,5 @@ touch $logpath/$logfile
     --verbose=false \
     &>>$logpath/$logfile
 
-# remove log files older than 30 days
-find $logpath -ctime +30 -ls -exec rm -f {} \;
+# remove log files older than 30 days or empty files older than two days
+find $logpath \( -ctime +30 -or -ctime +1 -empty \) -ls -exec rm -f {} \;
