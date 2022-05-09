@@ -362,12 +362,16 @@ if [ "$input" == "/cluster/shared/ESGF/rawdata/autosort" ]
 then
     files=($(find "$input" -type f ! -iname "*.nc" ! -iname "README" -print -quit))
     if [ ${#files[*]} -eq 1 ];then
+        echo "**                      **"
         echo "Clean up non-NetCDF files:"
+        echo "**                      **"
         find "$input" -type f ! -iname "*.nc" ! -iname "README" -print -delete
     fi
     folders=($(find "$input" -empty -type d -print -quit))
     if [ ${#folders[*]} -eq 1 ];then
+        echo "**                      **"
         echo "Clean up empty folders:"
+        echo "**                      **"
         find "$input" -empty -type d -print -delete
     fi
 fi
