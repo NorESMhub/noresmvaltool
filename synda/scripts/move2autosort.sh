@@ -1,5 +1,11 @@
 #!/bin/bash
-# move2autosort.sh  :move download CMIP6 model data to autosort/ folder
+
+ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+echo " "
+echo "Description:"
+echo "This script will move download CMIP6 model data to"
+printf "\t\e[4m $ESGF_ROOT/rawdata/autosort/ \e[0m\n"
+echo "with permission check and fixes."
 
 if [ $# -eq 0 ] || [ "$1" == "-h" ] || [ "$1" == "--help" ]
 then
@@ -25,9 +31,15 @@ do
         echo -e "is a link! SKIP...\n"
     elif [ -f $list ]; then
         if [ ${list: -3} == ".nc" ]; then
-            [ $(stat -c %a $list) -ne 664 ] && chmod 664 $list
-            [ $(stat -c %g $list) -ne 219252 ] && chgrp 219252 $list
-            mv $list /cluster/shared/ESGF/rawdata/autosort/
+            if [ $(stat -c %a $list) -ne 664 ]; then
+                chmod 664 $list
+                [ $? -ne 0 ] && echo "ERROR chmod to 664 of $list" && continue
+            fi
+            if [ $(stat -c %g $list) -ne 219560 ]; then
+                chgrp 219560 $list
+                [ $? -ne 0 ] && echo "ERROR chgrp to 219560 of $list" && continue
+            fi
+            mv $list $ESGF_ROOT/rawdata/autosort/
         else
             echo "** WARNING **"
             echo "   $list "
@@ -35,9 +47,12 @@ do
         fi
     elif [ -d $list ]; then
         find $list -type f -name '*.nc' ! -perm 664 -exec chmod 664 {} \;
+        [ $? -ne 0 ] && echo "ERROR chmod to 664 of $list" && continue
         find $list -type d ! -perm 2775 -exec chmod 2775 {} \;
-        find $list ! -group 219252 -exec chgrp 219252 {} \;
-        [ $? -eq 0 ] && mv $list /cluster/shared/ESGF/rawdata/autosort/
+        [ $? -ne 0 ] && echo "ERROR chmod to 2775 of $list" && continue
+        find $list ! -group 219560 -exec chgrp 219560 {} \;
+        [ $? -ne 0 ] && echo "ERROR chgrp to 219560 of $list" && continue
+        mv $list $ESGF_ROOT/rawdata/autosort/
     else
         echo "** WARNING **"
         echo " $list "

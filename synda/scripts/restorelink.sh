@@ -1,8 +1,9 @@
 #!/bin/env bash
 #set -ex
 
-##find /projects/NS9252K/ESGF/CMIP6/CMIP -maxdepth 4 -print >rpath.txt
-#ls -d /projects/NS9252K/ESGF/CMIP6/*/*/*/*/* >rpath.txt
+ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+##find $ESGF_ROOT/CMIP6/CMIP -maxdepth 4 -print >rpath.txt
+#ls -d $ESGF_ROOT/CMIP6/*/*/*/*/* >rpath.txt
 
 while read -r rpath
 do
@@ -14,7 +15,7 @@ do
         model=$(echo $fullfile |cut -d"/" -f8)
         real=$(echo $fullfile |cut -d"/" -f10)
 
-        ln -s ../../../../$data /projects/NS9252K/CMIP6/${expid}/${model}/${real}/.
+        ln -s ../../../../$data $ESGF_ROOT/CMIP6/${expid}/${model}/${real}/.
     done
 done <rpath.txt
 

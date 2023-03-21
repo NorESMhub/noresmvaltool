@@ -5,20 +5,22 @@
 # to DKRZ folder structure under /cluster/shared/ESGF
 # yanchun.he@nersc.no; last update: 2021.12.17
 
+ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+
 if [ $# -eq 0 ] || [ $1 == "-h" ] || [ $1 == "--help" ]
 then
     printf "\n"
     printf "Usage:\n"
-    printf 'raw2dkrz.sh
+    printf "raw2dkrz.sh
         --input=["files or/and folders patterns"]
-                                    : (optional) default to /cluster/shared/ESGF/rawdata/autosort;
+                                    : (optional) default to $ESGF_ROOT/rawdata/autosort;
                                       file or/and folder/path patterns (use " " for matching patters)
         --action=[move|link]        : (optional) default move; move the file or hard link the file
         --keeplink=[true|false]     : (optional); default false; only applies when --action==move
         --dryrun=[true|false]       : (optional); default false
         --overwrite=[true|false]    : (optional); default true; force the action/overwrite the file at destination
         --autofix=[true|false]      : (optional); default true; automatic download files with wrong checksum
-        --verbose=[true|false]      : (optional); default true; automatic download files with wrong checksum'
+        --verbose=[true|false]      : (optional); default true; automatic download files with wrong checksum"
     printf "\n"
     printf "Example:\n"
     printf '1: raw2dkrz.sh --input="/path/filepatterns*.nc /path/to/folders"\n'
@@ -34,7 +36,7 @@ else
     overwrite=true
     autofix=true
     verbose=true
-    input=/cluster/shared/ESGF/rawdata/autosort
+    input=$ESGF_ROOT/rawdata/autosort
     while test $# -gt 0; do
         case "$1" in
             --project=*)
@@ -79,7 +81,7 @@ else
     done
 fi
 
-SYNDA=/cluster/shared/ESGF/software/synda/bin/synda
+SYNDA=$ESGF_ROOT/software/synda/bin/synda
 if [ -z $ST_HOME ];then
     export ST_HOME=${HOME}/.synda
 fi
@@ -111,10 +113,8 @@ if $verbose; then
   echo " "
 fi
 
-[ ! -d /cluster/shared/ESGF/rawdata/autosort/failed ] && \
-    mkdir -p /cluster/shared/ESGF/rawdata/autosort/failed
-
-ESGF=/cluster/shared/ESGF
+[ ! -d $ESGF_ROOT/rawdata/autosort/failed ] && \
+    mkdir -p $ESGF_ROOT/rawdata/autosort/failed
 
 pid=$$
 ## generate filelist of all matching files
@@ -199,8 +199,8 @@ do
         echo "****************************"
         if ! $dryrun
         then
-            echo "move $ncfile to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
-            mv $ncpath/$ncfile /cluster/shared/ESGF/rawdata/autosort/failed/
+            echo "move $ncfile to $ESGF_ROOT/rawdata/autosort/failed/ ..."
+            mv $ncpath/$ncfile $ESGF_ROOT/rawdata/autosort/failed/
         fi
         continue
     fi
@@ -239,8 +239,8 @@ do
                 echo -e "File is not downloaded sucessfully\n"
             fi
         else
-            echo "move $ncfile to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
-            mv $ncpath/$ncfile /cluster/shared/ESGF/rawdata/autosort/failed/
+            echo "move $ncfile to $ESGF_ROOT/rawdata/autosort/failed/ ..."
+            mv $ncpath/$ncfile $ESGF_ROOT/rawdata/autosort/failed/
         fi
         # continue, the downloaded file will not moved,
         # but wait until the next time when this is script will be invoked again
@@ -254,9 +254,9 @@ do
 
     # destination dir
     if [ $project == "CMIP5" ]; then
-        destdir=$ESGF/$dkrz/$varname
+        destdir=$ESGF_ROOT/$dkrz/$varname
     else
-        destdir=$ESGF/$dkrz
+        destdir=$ESGF_ROOT/$dkrz
     fi
 
     # move file to dkrz folder structure
@@ -268,7 +268,7 @@ do
         fi
         if [ $(stat -c '%a' $destdir) -ne 2755 ]; then
             fld=$destdir
-            while [[ $fld != "/cluster/shared/ESGF" ]]; do
+            while [[ $fld != "$ESGF_ROOT" ]]; do
                 [ $(stat -c '%a' $fld) -ne 2755 ] && chmod 2755 $fld
                 fld=$(dirname "$fld");
             done
@@ -298,19 +298,19 @@ do
                 if [ $? -ne 0 ];then
                     echo "** ERROR CHANGING PERMISSION AS -rw-rw-r-- **"
                     echo "REMEMBER TO USE 'move2autosort.sh' TO MOVE DATA (SEE README)"
-                    echo "MOVE $fname to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
-                    mv $fname /cluster/shared/ESGF/rawdata/autosort/failed/
+                    echo "MOVE $fname to $ESGF_ROOT/rawdata/autosort/failed/ ..."
+                    mv $fname $ESGF_ROOT/rawdata/autosort/failed/
                     flag=false
                     continue
                 fi
             fi
-            if [ $(stat -c '%g' $fname) -ne 219252 ]; then
-                chgrp 219252 $fname
+            if [ $(stat -c '%g' $fname) -ne 219560 ]; then
+                chgrp 219560 $fname
                 if [ $? -ne 0 ];then
-                    echo "** ERROR CHANGING GROUP AS 9252K **"
+                    echo "** ERROR CHANGING GROUP AS 9560K **"
                     echo "REMEMBER TO USE 'move2autosort.sh' TO MOVE DATA (SEE README)"
-                    echo "MOVE $fname to /cluster/shared/ESGF/rawdata/autosort/failed/ ..."
-                    mv $fname /cluster/shared/ESGF/rawdata/autosort/failed/
+                    echo "MOVE $fname to $ESGF_ROOT/rawdata/autosort/failed/ ..."
+                    mv $fname $ESGF_ROOT/rawdata/autosort/failed/
                     flag=false
                     continue
                 fi
@@ -321,15 +321,15 @@ do
             if $keeplink
             then
                 srcdirlevs=$(dirname $fname |awk -F/ '{print NF}')
-                # upper dirs excluding /projects/NS9252K
+                # upper dirs excluding $ESGF_ROOT/../
                 upperdir=""
                 for (( i = 0; i < $srcdirlevs-3; i++ )); do
-                    upperdir="${upperdir}../"
+                    upperdir="${upperdir}.."
                 done
                 if [ $project == "CMIP5" ]; then
-                    ln -s ${upperdir}ESGF/$dkrz/$varname/$ncfile $fname 
+                    ln -s ${upperdir}/ESGF/$dkrz/$varname/$ncfile $fname 
                 else
-                    ln -s ${upperdir}ESGF/$dkrz/$ncfile $fname 
+                    ln -s ${upperdir}/ESGF/$dkrz/$ncfile $fname 
                 fi
             fi
         fi
@@ -358,7 +358,7 @@ find /tmp/ -maxdepth 1 -type f -name 'filelist.*' -user $USER -delete
 find /tmp/ -maxdepth 1 -type f -name 'synda.log.*' -user $USER -delete
 
 # cleanup empty folders
-if [ "$input" == "/cluster/shared/ESGF/rawdata/autosort" ]
+if [ "$input" == "$ESGF_ROOT/rawdata/autosort" ]
 then
     files=($(find "$input" -type f ! -iname "*.nc" ! -iname "README" -print -quit))
     if [ ${#files[*]} -eq 1 ];then

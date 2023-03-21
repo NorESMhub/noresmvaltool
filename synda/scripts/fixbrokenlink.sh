@@ -1,10 +1,11 @@
 #!/bin/env bash
 #set -x
 
-cd /projects/NS9252K
+ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+cd $ESGF_ROOT/../
 #find CMIP6 -xtype l -print >brokenlink.txt
 
-backup=/projects/NS9252K/.snapshots/Sunday-06-Sep-2020
+backup=/projects/NS9560K/.snapshots/Sunday-06-Sep-2020
 N=10
 cnt=1
 while read -r file
@@ -30,14 +31,14 @@ do
         cp $backup/$file $file
         if [ $? -ne 0 ];then
             echo "download data with synda"
-            synda get -q -f --verify_checksum --dest_folder /projects/NS9252K/$fpath $fname 1>/dev/null
+            synda get -q -f --verify_checksum --dest_folder /projects/NS9560K/$fpath $fname 1>/dev/null
         fi
     fi
-    /projects/NS9252K/share/synda/scripts/raw2dkrz.sh --project=cmip6 --action=move --input="$file" --keeplink=true --autofix=true &
-done </projects/NS9252K/share/synda/scripts/brokenlink.txt
+    $ESGF_ROOT/software/noresmvaltool/synda/scripts/raw2dkrz.sh --project=cmip6 --action=move --input="$file" --keeplink=true --autofix=true &
+done <$ESGF_ROOT/software/noresmvaltool/synda/scripts/brokenlink.txt
 
 # final check
 echo "** FINAL CHECK **"
 while read -r fname; do
     [ ! -e $fname ] && ls -l $fname
-done</projects/NS9252K/share/synda/scripts/brokenlink.txt
+done<$ESGF_ROOT/software/noresmvaltool/synda/scripts/brokenlink.txt

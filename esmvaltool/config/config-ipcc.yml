@@ -6,7 +6,7 @@
 # Directory where results are stored
 output_dir: /projects/NS2345K/www/diagnostics/esmvaltool/$USER/tmp
 # Directory for storing downloaded climate data
-download_dir:/cluster/shared/ESGF/rawdata/model/esmvaltool 
+download_dir: /nird/datalake/NS9560K/ESGF/rawdata/model
 
 # Auxiliary data directory (used for some additional datasets)
 # Local directory (default) or shared directory (commented)
@@ -41,7 +41,7 @@ compress_netcdf: false
 save_intermediary_cubes: true
 # Path to custom config-developer file, to customise project configurations.
 # See config-developer.yml for an example. Set to None to use the default
-config_developer_file: /projects/NS9252K/ESGF_betzy/software/noresmvaltool/esmvaltool/config/config-developer.yml
+config_developer_file: /nird/datalake/NS9560K/ESGF/software/noresmvaltool/esmvaltool/config/config-developer.yml
 # Get profiling information for diagnostics
 # Only available for Python diagnostics
 profile_diagnostic: false
@@ -51,12 +51,12 @@ profile_diagnostic: false
 # For site-specific entries, see below
 # Comment out these when using a site-specific path
 rootpath:
-  CMIP5: [/projects/NS9252K/ESGF_betzy/cmip5/output1, /projects/NS9034K/CMIP5/output1]
-  CMIP6: [/projects/NS9252K/ESGF_betzy/CMIP6, /projects/NS9034K/CMIP6]
-  OBS: /projects/NS9252K/ESGF_betzy/obsdata
-  OBS6: /projects/NS9252K/ESGF_betzy/obsdata
-  obs4mips: /projects/NS9252K/ESGF_betzy/obs4MIPs
-  RAWOBS: /projects/NS9252K/ESGF_betzy/rawdata/obs
+  CMIP5: [/nird/datalake/NS9560K/ESGF/cmip5/output1, /projects/NS9034K/CMIP5/output1]
+  CMIP6: [/nird/datalake/NS9560K/ESGF/CMIP6, /projects/NS9034K/CMIP6]
+  OBS: /nird/datalake/NS9560K/ESGF/obsdata
+  OBS6: /nird/datalake/NS9560K/ESGF/obsdata
+  obs4mips: /nird/datalake/NS9560K/ESGF/obs4MIPs
+  RAWOBS: /nird/datalake/NS9560K/ESGF/rawdata/obs
   default: ~/obsdata
 
 # Directory structure for input data: [default]/BADC/DKRZ/ETHZ/etc

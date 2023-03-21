@@ -7,7 +7,7 @@ then
     echo "Usage:"
     echo "  findperm.sh /path/to/directory/to/be/fixed"
     echo "  e.g.,"
-    echo "  findperm.sh /projects/NS9252K/ESGF/CMIP6"
+    echo "  findperm.sh /projects/NS9560K/ESGF/CMIP6"
     echo " "
     echo "** EXIT **"
     exit 1
@@ -19,7 +19,7 @@ if [ ! -f $logfile ]
 then
     touch $logfile
     chmod 664 $logfile
-    chown $USER:ns9252k $logfile
+    chown $USER:ns9560k $logfile
 fi
 
 # add file group write permission
@@ -28,8 +28,8 @@ find $1 -type f ! -perm -g=w -ls |tee -a $logfile
 # add folder group writeable permission
 find $1 -type d -name '[[:alnum:]]*' ! -perm 2775 -ls | tee -a $logfile
 
-# change group of files and folders to ns9252k
-find $1 ! -group ns9252k -ls | tee -a $logfile
+# change group of files and folders to ns9560k
+find $1 ! -group ns9560k -ls | tee -a $logfile
 
 # find core dump files
 find $1 -type f -name 'core.*' -ls |tee -a $logfile
