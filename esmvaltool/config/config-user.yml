@@ -25,11 +25,11 @@
 
 # Destination directory where all output will be written
 # Includes log files and performance stats.
-output_dir: /projects/NS2345K/www/diagnostics/esmvaltool/$USER/tmp
+output_dir: /projects/NS9560K/www/diagnostics/esmvaltool/$USER/tmp
 
 # Auxiliary data directory
 # Used by some recipes to look for additional datasets.
-auxiliary_data_dir: /projects/NS9252K/share/esmvaltool/auxiliary_data
+auxiliary_data_dir: /projects/NS9560K-datalake/ESGF/auxiliary_data
 
 # Automatic data download from ESGF --- [never]/when_missing/always
 # Use automatic download of missing CMIP3, CMIP5, CMIP6, CORDEX, and obs4MIPs
@@ -82,7 +82,7 @@ drs:
 # the output directory. Using the number there you can increase the number of
 # parallel tasks again to a reasonable number for the amount of memory
 # available in your system.
-max_parallel_tasks: null
+max_parallel_tasks: 2
 
 # Log level of the console --- debug/[info]/warning/error
 # For much more information printed to screen set log_level to ``debug``.
@@ -111,8 +111,8 @@ save_intermediary_cubes: true
 # Path to custom ``config-developer.yml`` file
 # This can be used to customise project configurations. See
 # ``config-developer.yml`` for an example. Set to ``null`` to use the default.
-#config_developer_file: ~/.esmvaltool/config-developer.yml
-config_developer_file: null
+config_developer_file: ~/.esmvaltool/config-developer.yml
+#config_developer_file: null
 
 # Use a profiling tool for the diagnostic run --- [false]/true
 # A profiler tells you which functions in your code take most time to run.
