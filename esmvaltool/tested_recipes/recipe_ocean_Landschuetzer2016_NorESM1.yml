@@ -1,7 +1,10 @@
 # ESMValTool
-# Landschuetzer2016.yml
+# recipe_Landschuetzer2016.yml
 ---
 documentation:
+
+  title: Evaluate simulated sea surface CO2 against Landschuetzer et al (2016) dataset
+
   description: |
     Recipe to evaluate CO2 Fluxes of marine biogeochemistry models of CMIP5
     using Landschuetzer et al (2016) dataset.
@@ -19,6 +22,15 @@ documentation:
     - crescendo
 
 
+# Write options for scripts
+# --------------------------------------------------
+WRITE_OPTS: &write_opts
+   - { write_plots: True, write_netcdf: True }
+
+
+# --------------------------------------------------
+# DATASETS
+# --------------------------------------------------
 datasets:
 # working datasets
     - {dataset: NorESM1-ME,  project: CMIP5,  exp: historical,  ensemble: r1i1p1,  start_year: 2001,  end_year: 2004}
@@ -44,7 +56,7 @@ preprocessors:
   prep_global_Surface_average_timeseries_2D:
     custom_order: true
     regrid:
-      target_grid: 1x1
+      target_grid: 2x2
       scheme: linear
     area_statistics:
       operator: mean
@@ -84,6 +96,7 @@ diagnostics:
       Global_surface_timeseries:
         script: ocean/diagnostic_timeseries.py
         observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+        <<: *write_opts
 
 
   # --------------------------------------------------
@@ -118,6 +131,8 @@ diagnostics:
     scripts:
       Global_Ocean_surface_map:
         script: ocean/diagnostic_maps.py
+        <<: *write_opts
       Global_Ocean_model_vs_obs:
         script: ocean/diagnostic_model_vs_obs.py
-        observational_dataset: {dataset: Landschutzer2016, project: OBS}
+        observational_dataset: {dataset: Landschuetzer2016, project: OBS}
+        <<: *write_opts
