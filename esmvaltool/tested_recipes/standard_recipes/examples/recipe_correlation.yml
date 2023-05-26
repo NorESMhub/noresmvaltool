@@ -5,6 +5,8 @@ documentation:
   description: |
     Calculate the Pearsons r correlation coefficient over specified dimensions.
 
+  title: Recipe that computes Pearson-r correlation coefficients.
+
   authors:
     - andela_bouwe
 
@@ -42,14 +44,13 @@ diagnostics:
         reference_dataset: ERA-Interim
         start_year: 2000
         end_year: 2002
+        project: CMIP5
         mip: Amon
         exp: historical
+        ensemble: r1i1p1
         additional_datasets:
           # One or more datasets can be added here
-          - {dataset: NorESM1-M, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: NorESM1-ME, project: CMIP5, ensemble: r1i1p1}
-          - {dataset: NorESM2-LM, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
-          - {dataset: NorESM2-MM, project: CMIP6, ensemble: r1i1p1f1, grid: gn}
+          - {dataset: bcc-csm1-1}
           # The reference dataset is required
           - {dataset: ERA-Interim, project: OBS6, tier: 3, type: reanaly, version: 1}
     scripts:

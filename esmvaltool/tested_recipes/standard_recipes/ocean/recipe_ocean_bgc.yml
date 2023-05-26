@@ -186,11 +186,11 @@ diagnostics:
         mip: Omon
         additional_datasets:
           - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
-      #so: # Salinity 3D
-        #preprocessor: prep_timeseries_global_volume_average
-        #mip: Omon
-        #additional_datasets:
-          #- {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
+      so: # Salinity 3D
+        preprocessor: prep_timeseries_global_volume_average
+        mip: Omon
+        additional_datasets:
+          - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  start_year: 2000,  end_year: 2000,  tier: 2}
       no3: # nitrate
         preprocessor: prep_timeseries_global_volume_average
         mip: Oyr
