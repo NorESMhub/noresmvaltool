@@ -7,4 +7,4 @@ The recipes in this folder have been tested with NorESMValTool 2.8.0 on the Nird
 
 ## Official ESMValTool recipe test results
 
-ESMValTool publish an official [list of tested recipes](https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/debug.html) in connection with each stable release.
+ESMValTool publish an official [list of tested recipes](https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/debug.html) in connection with each stable release. Currenlty Nird only stores a relatively small subset of the datasets required for theses recipes. Please open a discussion if you want support for additional datasets for the Nird installation.
