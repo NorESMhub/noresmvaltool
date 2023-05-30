@@ -58,7 +58,7 @@ rootpath:
   CMIP5: [/projects/NS9560K-datalake/ESGF/cmip5/output1, /projects/NS9034K/CMIP5/output1, /scratch/$USER/ESGF/cmip5/output1]
   CMIP6: [/projects/NS9560K-datalake/ESGF/CMIP6, /projects/NS9034K/CMIP6, /scratch/$USER/ESGF/CMIP6]
   OBS: [/projects/NS9560K-datalake/ESGF/obsdata, /scratch/$USER/ESGF/obsdata]
-  OBS6: [/projects/NS9560K-datalake/ESGF, /scratch/$USER/ESGF/obsdata]
+  OBS6: [/projects/NS9560K-datalake/ESGF/obsdata, /scratch/$USER/ESGF/obsdata]
   obs4MIPs: [/projects/NS9560K-datalake/ESGF/obs4MIPs, /scratch/$USER/ESGF/obs4MIPs]
   RAWOBS: [/projects/NS9560K-datalake/ESGF/rawdata/obs, /scratch/$USER/ESGF/rawdata/obs]
   default: ~/obsdata
