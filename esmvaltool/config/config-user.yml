@@ -60,6 +60,7 @@ rootpath:
   OBS: [/projects/NS9560K-datalake/ESGF/obsdata, /scratch/$USER/ESGF/obsdata]
   OBS6: [/projects/NS9560K-datalake/ESGF/obsdata, /scratch/$USER/ESGF/obsdata]
   obs4MIPs: [/projects/NS9560K-datalake/ESGF/obs4MIPs, /scratch/$USER/ESGF/obs4MIPs]
+  native6: [/projects/NS9560K-datalake/ESGF/obsdata]
   RAWOBS: [/projects/NS9560K-datalake/ESGF/rawdata/obs, /scratch/$USER/ESGF/rawdata/obs]
   default: ~/obsdata
 
