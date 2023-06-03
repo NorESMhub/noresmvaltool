@@ -41,7 +41,7 @@ CATEGORY/subcategory/directory    :
 
 examples/
   recipe_check_obs                : default    : ERROR  :          :
-  recipe_concatenate_exps         : default    : ERROR  :          :
+  recipe_concatenate_exps         : default    : OK     :   2.8 GB : 00:00:20
   recipe_concatenate_exps         : NorESM1    : OK     :   1.7 GB : 00:00:06
   recipe_correlation              : default    : OK     :   3.2 GB : 00:00:09
   recipe_decadal                  : default    : ERROR  :          :
@@ -86,5 +86,13 @@ ocean diagnostics:
   recipe_ocean_multimap           : default    : OK     :   3.3 GB : 00:04:12
   recipe_ocean_quadmap            : default    : OK     :   1.6 GB : 00:00:08
   recipe_ocean_scalar_fields      : default    : OK     :   1.9 GB : 00:09:08
+sea surface salinity evaluation:
+  recipe_sea_surface_salinity     : default    : OK     : 115.5 GB : 00:08:59
+
+=== SEA ICE ===
+  recipe_seaice                   : default    : ERROR  :          :
+  recipe_seaice_drift             : default    : ERROR  :          :
+  recipe_seaice_feedback          : default    : OK     :   4.1 GB : 00:18:37
+  recipe_seaice_feedback          : NorESM1-ME : OK     :   2.7 GB : 00:00:29
 ```
 
