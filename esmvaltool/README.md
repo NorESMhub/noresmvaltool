@@ -57,7 +57,7 @@ examples/
 
 === ATMOSPHERE ===
 consecutive dry days:
-  recipe_consecdrydays            : NorESM1    : OK     :   1.4 GB : 00:00:08
+  recipe_consecdrydays            : NorESM1/2  : OK     :   3.0 GB : 00:00:22
 modes of variability:
   recipe_modes_of_variability     : default    : OK     :   3.7 GB : 00:00:30
 precipitation quantile bias:
