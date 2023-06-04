@@ -63,8 +63,9 @@ modes of variability:
 precipitation quantile bias:
   recipe_quantilebias             : default    : OK     :   1.9 GB : 00:00:07
 zonal and meridional means:
-  recipe_validation               : NorESM1    : ERROR  :          :
+  recipe_validation               : NorESM1    : OK     :   4.9 GB : 00:00:28
   recipe_validation_CMIP6         : default    : OK     :   6.0 GB : 00:00:21
+  recipe_validation_CMIP6         : NorESM2    : OK     :   6.8 GB : 00:00:22
 
 === LAND ===
 runoff, precipitation, evapotranspiration:
