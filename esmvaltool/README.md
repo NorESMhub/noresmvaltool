@@ -74,6 +74,7 @@ runoff, precipitation, evapotranspiration:
 === OCEAN ===
 arctic ocean:
   recipe_arctic_ocean             : default    : OK     :  55.8 GB : 00:27:36
+  recipe_arctic_ocean             : NorESM1    : OK     :  59.9 GB : 00:34:57
 ocean chlorophyll in ESMs compared to ESA-CCI observations
   recipe_esacci_oc                : default    : OK     :   5.7 GB : 00:01:50
 ocean diagnostics:
@@ -82,6 +83,8 @@ ocean diagnostics:
   recipe_ocean_Landschuetzer2016  : NorESM2-MM : OK     :   5.9 GB : 00:00:31
   recipe_ocean_amoc               : default    : OK     :   6.8 GB : 00:01:33
   recipe_ocean_bgc                : default    : OK     :  17.8 GB : 00:00:51
+  recipe_ocean_bgc                : NorESM1-ME : OK     :  55.8 GB : 00:11:42
+  recipe_ocean_bgc                : NorESM2-LM : OK     :  54.9 GB : 02:26:00
   recipe_ocean_example            : default    : OK     :  24.5 GB : 00:02:22
   recipe_ocean_ice_extent         : default    : OK     :   5.7 GB : 00:00:31
   recipe_ocean_multimap           : default    : OK     :   3.3 GB : 00:04:12
