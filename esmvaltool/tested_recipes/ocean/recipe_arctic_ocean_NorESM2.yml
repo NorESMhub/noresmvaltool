@@ -22,21 +22,15 @@ documentation:
 # Model problems
 # bcc-csm1-1 - lon and lat in rotated grid coordinates, not usable
 # GFDL-ESM2G - lon and lat in rotated grid coordinates, not usable
-datasets:   # Limit to 8 datasets, to reduce number of plots
-  - {dataset: ACCESS1-0}
-  #- {dataset: ACCESS1-3}
-  - {dataset: CanESM2}
-  - {dataset: CCSM4}
-  #- {dataset: CMCC-CM}
-  #- {dataset: CSIRO-Mk3-6-0}
-  - {dataset: HadCM3}
-  #- {dataset: HadGEM2-ES}
-  #- {dataset: IPSL-CM5A-LR}
-  - {dataset: IPSL-CM5A-MR}
-  #- {dataset: MPI-ESM-LR}
-  - {dataset: MPI-ESM-MR}
-  - {dataset: NorESM1-M}
-  - {dataset: NorESM1-ME}
+datasets:
+  #- {dataset: ACCESS-ESM1-5}
+  #- {dataset: AWI-ESM-1-1-LR}
+  #- {dataset: CanESM5}
+  #- {dataset: CMCC-ESM2}
+  #- {dataset: EC-Earth3}
+  #- {dataset: MPI-ESM1-2-HR}
+  - {dataset: NorESM2-LM}
+  - {dataset: NorESM2-MM}
 
 diagnostics:
 
@@ -44,17 +38,19 @@ diagnostics:
     description: Derive ocean variables
     variables:
       areacello:
-        project: CMIP5
-        mip: fx
+        project: CMIP6
+        mip: Ofx
         exp: historical
-        ensemble: r0i0p0
+        ensemble: r1i1p1f1
+        grid: gn
         additional_datasets:
-          - {dataset: PHC, project: OBS6, tier: 2, type: clim, version: 3}
+          - {dataset: PHC, project: OBS6, mip: fx, tier: 2, type: clim, version: 3}
       thetao: &variable
         mip: Omon
-        project: CMIP5
+        project: CMIP6
         exp: historical
-        ensemble: r1i1p1
+        ensemble: r1i1p1f1
+        grid: gr
         start_year: 1980
         end_year: 2005
         additional_datasets:
