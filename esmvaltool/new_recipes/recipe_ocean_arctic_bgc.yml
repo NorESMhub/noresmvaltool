@@ -1,0 +1,195 @@
+# ESMValTool
+# recipe_ocean_ice_extent.yml
+---
+documentation:
+  title: Arctic ocean BGC analysis
+
+  description: |
+    Recipe to demonstrate several sea ice plots based.
+
+  authors:
+    - unmaintained
+    # Tomas Torsvik, tomas.torsvik@uib.no
+
+  maintainer:
+    - unmaintained
+    # Tomas Torsvik, tomas.torsvik@uib.no
+
+  #references:
+  #  - demora2018gmd
+
+  projects:
+    - ukesm
+
+datasets:
+# Note that there is no way to extract specific months here, need to add times twice in extract_time
+  - {dataset: NorESM2-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f1}
+
+
+preprocessors:
+
+  timeseries_NHW_ice_extent_hist: # North Hemisphere Winter ice_extent
+    custom_order: true
+    extract_time: &time_anchor_hist # declare time here.
+        start_year: 1984
+        start_month: 12
+        start_day: 1
+        end_year: 2014
+        end_month: 9
+        end_day: 31
+    extract_season:
+      season: DJF
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+    extract_region: &NH_region_anchor
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: 0.
+      end_latitude: 90.
+
+  timeseries_NHS_ice_extent_hist: # North Hemisphere Summer ice_extent
+    custom_order: true
+    extract_time: *time_anchor_hist
+    extract_season:
+      season: JJA
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+    extract_region: *NH_region_anchor
+
+  timeseries_NHW_ice_extent_ssp: # North Hemisphere Winter ice_extent
+    custom_order: true
+    extract_time: &time_anchor_ssp # declare time here.
+        start_year: 2070
+        start_month: 12
+        start_day: 1
+        end_year: 2100
+        end_month: 9
+        end_day: 31
+    extract_season:
+      season: DJF
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+    extract_region: *NH_region_anchor
+
+  timeseries_NHS_ice_extent_ssp: # North Hemisphere Summer ice_extent
+    custom_order: true
+    extract_time: *time_anchor_ssp
+    extract_season:
+      season: JJA
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+    extract_region: *NH_region_anchor
+
+  timeseries_SHS_ice_extent_hist: # South Hemisphere Summer ice_extent
+    custom_order: true
+    extract_time:  *time_anchor_hist
+    extract_season:
+      season: DJF
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: -90.
+      end_latitude: 0.
+
+  timeseries_SHW_ice_extent_hist: # South Hemisphere Winter ice_extent
+    custom_order: true
+    extract_time:  *time_anchor_hist
+    extract_season:
+      season: JJA
+    regrid:
+      target_grid: 1x1
+      scheme: unstructured_nearest
+    extract_region:
+      start_longitude: -180.
+      end_longitude: 180.
+      start_latitude: -90.
+      end_latitude: 0.
+
+
+
+diagnostics:
+  # --------------------------------------------------
+  # Time series diagnostics
+  # --------------------------------------------------
+  diag_ice_NHW_hist:
+    description: North Hemisphere Winter Sea Ice diagnostics - historical
+    variables:
+      o2min: # oxygen minimum
+        exp: historical
+        start_year: 1984
+        end_year: 2014
+        preprocessor: timeseries_NHW_ice_extent_hist
+        mip: Omon
+        grid: gr
+    scripts:
+      Global_seaice_timeseries: &script_anchor   # declare script here.
+        script: /projects/NS2980K/home/tomast/ESMValTool/noresmvaltool/esmvaltool/diag_scripts/ocean/diagnostic_polar.py
+        threshold: 15.
+        lat_min: 40
+
+  diag_ice_NHS_hist:
+    description:  North Hemisphere Summer Sea Ice diagnostics - historical
+    variables:
+      o2min: # oxygen minimum
+        exp: historical
+        start_year: 1984
+        end_year: 2014
+        preprocessor: timeseries_NHS_ice_extent_hist
+        mip: Omon
+        grid: gr
+    scripts:
+      Global_seaice_timeseries: *script_anchor
+      lat_min: 40
+
+  # diag_ice_NHW_ssp:
+  #   description: North Hemisphere Winter Sea Ice diagnostics - historical
+  #   variables:
+  #     siconc: # surface ice cover
+  #       exp: ssp585
+  #       start_year: 2070
+  #       end_year: 2100
+  #       preprocessor: timeseries_NHW_ice_extent_ssp
+  #       mip: SImon
+  #       grid: gn
+  #   scripts:
+  #     Global_seaice_timeseries: &script_anchor   # declare script here.
+  #       script: /projects/NS2980K/home/tomast/ESMValTool/noresmvaltool/esmvaltool/diag_scripts/ocean/diagnostic_polar.py
+  #       threshold: 15.
+
+  # diag_ice_NHS_ssp:
+  #   description:  North Hemisphere Summer Sea Ice diagnostics - historical
+  #   variables:
+  #     siconc: # surface ice cover
+  #       exp: ssp585
+  #       start_year: 2070
+  #       end_year: 2100
+  #       preprocessor: timeseries_NHS_ice_extent_ssp
+  #       mip: SImon
+  #       grid: gn
+  #   scripts:
+  #     Global_seaice_timeseries: *script_anchor
+
+  # diag_ice_SHW:
+  #   description:  South Hemisphere Winter Sea Ice diagnostics
+  #   variables:
+  #     siconc: # surface ice cover
+  #       preprocessor: timeseries_SHW_ice_extent
+  #       mip: SImon
+  #   scripts:
+  #     Global_seaice_timeseries: *script_anchor
+
+  # diag_ice_SHS:
+  #   description:  South Hemisphere Summer Sea Ice diagnostics
+  #   variables:
+  #     siconc: # surface ice cover
+  #       preprocessor: timeseries_SHS_ice_extent
+  #       mip: SImon
+  #   scripts:
+  #     Global_seaice_timeseries: *script_anchor
