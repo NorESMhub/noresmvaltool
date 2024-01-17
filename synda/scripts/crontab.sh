@@ -1,7 +1,7 @@
 #!/bin/env bash
 
 ## This is a crontab scheduled task, running automatically every 30 mins
-## currently installed in login2
+## currently installed in login0
 #*     *     *   *    *        command to be executed
 #-     -     -   -    -
 #|     |     |   |    |
@@ -11,7 +11,7 @@
 #|     +----------- hour (0 - 23)
 #+------------- min (0 - 59)
 #MAILTO="yanchun.he@nersc.no"
-#0,30   *     *   *    *        . /nird/datalake/NS9560K/ESGF/software/noresmvaltool/synda/scripts/crontab.sh  >/dev/null 2>&1
+#0,30   *     *   *    *        . /projects/NS9560K-datalake/ESGF/software/noresmvaltool/synda/scripts/crontab.sh  >/dev/null 2>&1
 
 njobs1=$(ps x |grep -v 'grep' |grep -c 'raw2dkrz.sh')
 njobs2=$(ps x |grep -v 'grep' |grep -c 'crontab.sh')
@@ -21,7 +21,10 @@ if [ $njobs1 -ge 1 ] || [ $njobs2 -ge 3 ]; then
     exit
 fi
 
-ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+ESGF_ROOT=/projects/NS9560K-datalake/ESGF
+[ ! -d $ESGF_ROOT ] && ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+[ ! -d $ESGF_ROOT ] && echo "$ESGF_ROOT does not exist, EXIT" && exit 1
+
 logpath=$ESGF_ROOT/rawdata/logs
 logfile=$(date +%Y-%m-%d).log
 touch $logpath/$logfile

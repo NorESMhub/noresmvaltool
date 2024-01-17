@@ -1,7 +1,9 @@
 #!/bin/env bash
 #set -ex
 
-ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+ESGF_ROOT=/projects/NS9560K-datalake/ESGF
+[ ! -d $ESGF_ROOT ] && ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+[ ! -d $ESGF_ROOT ] && echo "$ESGF_ROOT does not exist, EXIT" && exit 1
 ##find $ESGF_ROOT/CMIP6/CMIP -maxdepth 4 -print >rpath.txt
 #ls -d $ESGF_ROOT/CMIP6/*/*/*/*/* >rpath.txt
 

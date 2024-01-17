@@ -2,10 +2,12 @@
 #set -ex
 
 # sort and move downloaded raw cmip5/cmip6 data
-# to DKRZ folder structure under /cluster/shared/ESGF
-# yanchun.he@nersc.no; last update: 2021.12.17
+# to DKRZ folder structure under NS9560K/ESGF
+# yanchun.he@nersc.no; last update: 2024.01.17
 
-ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+ESGF_ROOT=/projects/NS9560K-datalake/ESGF
+[ ! -d $ESGF_ROOT ] && ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+[ ! -d $ESGF_ROOT ] && echo "$ESGF_ROOT does not exist, EXIT" && exit 1
 
 if [ $# -eq 0 ] || [ $1 == "-h" ] || [ $1 == "--help" ]
 then
@@ -175,10 +177,10 @@ do
             #items=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum,dataset_version,local_path,project,checksum_type -F value 2>/tmp/synda.log.$pid))
             project=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C project -F value 2>/tmp/synda.log.$pid))
             if [ $project ]; then
-                checksumr=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value 2>/tmp/synda.log.$pid))
-                checksum_type=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value 2>/tmp/synda.log.$pid))
-                dataset_version=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value 2>/tmp/synda.log.$pid))
-                local_path=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value 2>/tmp/synda.log.$pid))
+                checksumr=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum -F value |tail -1 2>/tmp/synda.log.$pid))
+                checksum_type=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C checksum_type -F value |tail -1 2>/tmp/synda.log.$pid))
+                dataset_version=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C dataset_version -F value |tail -1 2>/tmp/synda.log.$pid))
+                local_path=($($SYNDA dump -f $ncfile latest=$flag1 replica=$flag2 -C local_path -F value |tail -1 2>/tmp/synda.log.$pid))
                 break
             fi
         done

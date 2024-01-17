@@ -1,7 +1,9 @@
 #!/bin/env bash
 #set -x
 
-ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+ESGF_ROOT=/projects/NS9560K-datalake/ESGF
+[ ! -d $ESGF_ROOT ] && ESGF_ROOT=/nird/datalake/NS9560K/ESGF
+[ ! -d $ESGF_ROOT ] && echo "$ESGF_ROOT does not exist, EXIT" && exit 1
 cd $ESGF_ROOT/../
 #find CMIP6 -xtype l -print >brokenlink.txt
 
