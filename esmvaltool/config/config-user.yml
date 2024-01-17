@@ -1,0 +1,123 @@
+###############################################################################
+# Example user configuration file for ESMValTool
+###############################################################################
+#
+# Note for users:
+# --------------
+# Site-specific entries for different HPC centers are given at the bottom of
+# this file. Comment out/replace as needed. This default version of the file
+# can be used in combination with the command line argument
+# ``search_esgf=when_missing``. If only certain values are allowed for an
+# option, these are listed after ``---``. The option in square brackets is the
+# default value, i.e., the one that is used if this option is omitted in the
+# file.
+#
+###############################################################################
+#
+# Note for developers:
+# -------------------
+# Two identical copies of this file (``ESMValTool/config-user-example.yml`` and
+# ``ESMValCore/esmvalcore/config-user.yml``) exist. If you change one of it,
+# make sure to apply the changes to the other.
+#
+###############################################################################
+---
+
+# Destination directory where all output will be written
+# Includes log files and performance stats.
+output_dir: /projects/NS9560K/www/diagnostics/esmvaltool/$USER/tmp
+
+# Auxiliary data directory
+# Used by some recipes to look for additional datasets.
+auxiliary_data_dir: /projects/NS9560K-datalake/ESGF/auxiliary_data
+
+# Automatic data download from ESGF --- [never]/when_missing/always
+# Use automatic download of missing CMIP3, CMIP5, CMIP6, CORDEX, and obs4MIPs
+# data from ESGF. ``never`` disables this feature, which is useful if you are
+# working on a computer without an internet connection, or if you have limited
+# disk space. ``when_missing`` enables the automatic download for files that
+# are not available locally. ``always`` will always check ESGF for the latest
+# version of a file, and will only use local files if they correspond to that
+# latest version.
+search_esgf: never
+
+# Directory for storing downloaded climate data
+# Make sure to use a directory where you can store multiple GBs of data. Your
+# home directory on a HPC is usually not suited for this purpose, so please
+# change the default value in this case!
+download_dir: /scratch/$USER/ESGF/rawdata/model
+
+# Rootpaths to the data from different projects
+# This default setting will work if files have been downloaded by ESMValTool
+# via ``search_esgf``. Lists are also possible. For site-specific entries,
+# see the default ``config-user.yml`` file that can be installed with the
+# command ``esmvaltool config get_config_user``. For each project, this can
+# be either a single path or a list of paths. Comment out these when using a
+# site-specific path.
+rootpath:
+  CMIP5: [/projects/NS9560K-datalake/ESGF/cmip5/output1, /projects/NS9034K/CMIP5/output1, /scratch/$USER/ESGF/cmip5/output1]
+  CMIP6: [/projects/NS9560K-datalake/ESGF/CMIP6, /projects/NS9034K/CMIP6, /scratch/$USER/ESGF/CMIP6]
+  OBS: [/projects/NS9560K-datalake/ESGF/obsdata, /scratch/$USER/ESGF/obsdata]
+  OBS6: [/projects/NS9560K-datalake/ESGF/obsdata, /scratch/$USER/ESGF/obsdata]
+  obs4MIPs: [/projects/NS9560K-datalake/ESGF/obs4MIPs, /scratch/$USER/ESGF/obs4MIPs]
+  native6: [/projects/NS9560K-datalake/ESGF/obsdata]
+  RAWOBS: [/projects/NS9560K-datalake/ESGF/rawdata/obs, /scratch/$USER/ESGF/rawdata/obs]
+  default: ~/obsdata
+
+# Directory structure for input data --- [default]/ESGF/BADC/DKRZ/ETHZ/etc.
+# This default setting will work if files have been downloaded by ESMValTool
+# via ``search_esgf``. See ``config-developer.yml`` for definitions. Comment
+# out/replace as per needed.
+drs:
+  CMIP3: DKRZ
+  CMIP5: DKRZ
+  CMIP6: DKRZ
+  CORDEX: DKRZ
+  OBS6: default
+  obs4MIPs: default
+
+# Run at most this many tasks in parallel --- [null]/1/2/3/4/...
+# Set to ``null`` to use the number of available CPUs. If you run out of
+# memory, try setting max_parallel_tasks to ``1`` and check the amount of
+# memory you need for that by inspecting the file ``run/resource_usage.txt`` in
+# the output directory. Using the number there you can increase the number of
+# parallel tasks again to a reasonable number for the amount of memory
+# available in your system.
+max_parallel_tasks: 2
+
+# Log level of the console --- debug/[info]/warning/error
+# For much more information printed to screen set log_level to ``debug``.
+log_level: info
+
+# Exit on warning --- true/[false]
+# Only used in NCL diagnostic scripts.
+exit_on_warning: false
+
+# Plot file format --- [png]/pdf/ps/eps/epsi
+output_file_type: png
+
+# Remove the ``preproc`` directory if the run was successful --- [true]/false
+# By default this option is set to ``true``, so all preprocessor output files
+# will be removed after a successful run. Set to ``false`` if you need those files.
+remove_preproc_dir: false
+
+# Use netCDF compression --- true/[false]
+compress_netcdf: false
+
+# Save intermediary cubes in the preprocessor --- true/[false]
+# Setting this to ``true`` will save the output cube from each preprocessing
+# step. These files are numbered according to the preprocessing order.
+save_intermediary_cubes: true
+
+# Path to custom ``config-developer.yml`` file
+# This can be used to customise project configurations. See
+# ``config-developer.yml`` for an example. Set to ``null`` to use the default.
+config_developer_file: ~/.esmvaltool/config-developer.yml
+#config_developer_file: null
+
+# Use a profiling tool for the diagnostic run --- [false]/true
+# A profiler tells you which functions in your code take most time to run.
+# For this purpose we use ``vprof``, see below for notes. Only available for
+# Python diagnostics.
+profile_diagnostic: false
+
