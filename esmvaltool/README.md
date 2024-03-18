@@ -28,7 +28,7 @@ Standard recipes that are bundled with the esmvaltool installation are now avail
 
 Official ESMValTool recipe test results
 ---------------------------------------
-ESMValTool publish an official [list of tested recipes](https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/debug.html) in connection with each stable release. Currenlty NIRD only stores a relatively small subset of the datasets required for theses recipes. Please open a discussion if you want support for additional datasets for the Nird installation.
+ESMValTool publish an official [list of tested recipes](https://esmvaltool.dkrz.de/shared/esmvaltool/stable_release/debug.html) in connection with each stable release. Currently NIRD only stores a relatively small subset of the datasets required for theses recipes. Please open a discussion if you want support for additional datasets for the Nird installation.
 
 
 ESMValTool 2.10.0 tested recipes
