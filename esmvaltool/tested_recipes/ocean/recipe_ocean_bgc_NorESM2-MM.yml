@@ -36,7 +36,7 @@ documentation:
 
 datasets:
   # Set end year to either 2000 or 2004, depending on plotting with or without WOA18 data
-  - {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2000}
+  #- {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2000}
   - {dataset: NorESM2-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2000}
   #- {dataset: NorESM2-LM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2000, end_year: 2004}
   #- {dataset: NorESM2-MM, project: CMIP6, exp: historical, ensemble: r1i1p1f1, start_year: 2000, end_year: 2004}
@@ -362,255 +362,256 @@ diagnostics:
         script: ocean/diagnostic_timeseries.py
 
 
-  # # --------------------------------------------------
-  # # Profile diagnostics - vs WOA
-  # # --------------------------------------------------
-  # #Use WOA13 Oyr for full depth profiles (no3, o2, si, po4)
-  # diag_profile_vs_WOA13:
-  #   description: Global profile (WOA observations)
-  #   variables:
-  #     no3: # Nitrate ocean surface
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     o2: # oxygen
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     si: # Silicate
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     po4: # Phosphate
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #   additional_datasets:
-  #     - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  mip: Oyr,  start_year: 2000,  end_year: 2000,  tier: 2}
-  #   scripts:
-  #     Global_profile_vs_WOA:
-  #       script: ocean/diagnostic_profiles.py
-  #       observational_dataset: {dataset: WOA, project: OBS}
+  # --------------------------------------------------
+  # Profile diagnostics - vs WOA
+  # --------------------------------------------------
+  #Use WOA13 Oyr for full depth profiles (no3, o2, si, po4)
+  diag_profile_vs_WOA13:
+    description: Global profile (WOA observations)
+    variables:
+      no3: # Nitrate ocean surface
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      o2: # oxygen
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      si: # Silicate
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      po4: # Phosphate
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+    additional_datasets:
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  mip: Oyr,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      Global_profile_vs_WOA:
+        script: ocean/diagnostic_profiles.py
+        observational_dataset: {dataset: WOA, project: OBS}
 
-  # #Use WOA18 Omon for full depth profiles (thetao, so)
-  # diag_profile_vs_WOA18:
-  #   description: Global profile (WOA observations)
-  #   variables:
-  #     thetao: # Temperature ocean surface
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     so: # Salinity ocean surface
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #   additional_datasets:
-  #     - {dataset: WOA,  project: OBS6,  type: clim,  version: 2018,  mip: Omon,  start_year: 2000,  end_year: 2000,  tier: 2}
-  #   scripts:
-  #     Global_profile_vs_WOA:
-  #       script: ocean/diagnostic_profiles.py
-  #       observational_dataset: {dataset: WOA, project: OBS6}
+  #Use WOA18 Omon for full depth profiles (thetao, so)
+  diag_profile_vs_WOA18:
+    description: Global profile (WOA observations)
+    variables:
+      thetao: # Temperature ocean surface
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      so: # Salinity ocean surface
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+    additional_datasets:
+      - {dataset: WOA,  project: OBS6,  type: clim,  version: 2018,  mip: Omon,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      Global_profile_vs_WOA:
+        script: ocean/diagnostic_profiles.py
+        observational_dataset: {dataset: WOA, project: OBS6}
 
-  # # --------------------------------------------------
-  # # Profile diagnostics - no data
-  # # --------------------------------------------------
-  # diag_profile_no_obs:
-  #   description: Global profile (No observations)
-  #   variables:
-  #     chl: # chlorophyll
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     dfe: # iron
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     talk: # alkalinity
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #     dissic: # Dissolved inorganic carbon
-  #       preprocessor: prep_global_profile
-  #       end_year: 2001
-  #       mip: Omon
-  #       grid: gr
-  #   scripts:
-  #     Global_profile_no_obs:
-  #       script: ocean/diagnostic_profiles.py
-
-
-  # # --------------------------------------------------
-  # # Map diagnostics - vs WOA
-  # # --------------------------------------------------
-  # diag_surface_maps_vs_WOA:
-  #   description: Global Ocean Surface maps vs WOA
-  #   variables:
-  #     thetao:
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     so:
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     no3:
-  #       preprocessor: prep_surface_map_regrid_3D_clip
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     si: # Silicate
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     o2: # Oxygen
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     po4:
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #   additional_datasets:
-  #     - {dataset: WOA,  project: OBS6,  type: clim,  version: 2018,  mip: Omon,  start_year: 2000,  end_year: 2000,  tier: 2}
-  #   scripts:
-  #     Global_Ocean_surface_map:
-  #       script: ocean/diagnostic_maps.py
-
-  #     Global_Ocean_model_vs_obs:
-  #       script: ocean/diagnostic_model_vs_obs.py
-  #       observational_dataset: {dataset: WOA, project: OBS6}
+  # --------------------------------------------------
+  # Profile diagnostics - no data
+  # --------------------------------------------------
+  diag_profile_no_obs:
+    description: Global profile (No observations)
+    variables:
+      chl: # chlorophyll
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      dfe: # iron
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      talk: # alkalinity
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+      dissic: # Dissolved inorganic carbon
+        preprocessor: prep_global_profile
+        end_year: 2001
+        mip: Omon
+        grid: gr
+    scripts:
+      Global_profile_no_obs:
+        script: ocean/diagnostic_profiles.py
 
 
-  # # --------------------------------------------------
-  # # Map diagnostics - no data
-  # # --------------------------------------------------
-  # diag_surface_maps_no_data:
-  #   description: Global Ocean Surface maps - no data
-  #   variables:
-  #     intpp:
-  #       preprocessor: prep_surface_map_regrid_2D
-  #       end_year: 2004
-  #       mip: Omon
-  #       grid: gn
-  #     fgco2:
-  #       preprocessor: prep_surface_map_regrid_2D
-  #       end_year: 2004
-  #       mip: Omon
-  #       grid: gn
-  #     chl:
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2004
-  #       mip: Omon
-  #       grid: gr
-  #       # thresholds: [0.1, 0.2, 0.5]
-  #     dfe:
-  #       preprocessor: prep_surface_map_regrid_3D
-  #       end_year: 2004
-  #       mip: Omon
-  #       grid: gr
-  #     intdic:
-  #       preprocessor: prep_surface_map_regrid_2D
-  #       end_year: 2004
-  #       mip: Omon
-  #       grid: gr
-  #   scripts:
-  #     Global_Ocean_surface_map:
-  #       script: ocean/diagnostic_maps.py
+  # --------------------------------------------------
+  # Map diagnostics - vs WOA
+  # --------------------------------------------------
+  diag_surface_maps_vs_WOA:
+    description: Global Ocean Surface maps vs WOA
+    variables:
+      thetao:
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      so:
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      no3:    # exclude for NorESM2-MM?
+        preprocessor: prep_surface_map_regrid_3D_clip
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      si: # Silicate
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      o2: # Oxygen
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      po4:
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2000
+        mip: Omon
+        grid: gr
+    additional_datasets:
+      - {dataset: WOA,  project: OBS6,  type: clim,  version: 2018,  mip: Omon,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
+
+      Global_Ocean_model_vs_obs:
+        script: ocean/diagnostic_model_vs_obs.py
+        observational_dataset: {dataset: WOA, project: OBS6}
 
 
-  # # --------------------------------------------------
-  # # Transects diagnostics - vs WOA
-  # # --------------------------------------------------
-  # #Use WOA13 Oyr for full depth profiles (no3, o2, si, po4)
-  # diag_transect_vs_WOA13:
-  #   description: Transect maps vs WOA
-  #   variables:
-  #     no3:
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Oyr
-  #       grid: gr
-  #       thresholds: [10., 20., 30.]
-  #     si: # Silicate
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Oyr
-  #       grid: gr
-  #     o2: # Oxygen
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Oyr
-  #       grid: gr
-  #       thresholds: [0.03, ]
-  #     po4:
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Oyr
-  #       grid: gr
-  #   additional_datasets:
-  #     - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  mip: Oyr,  start_year: 2000,  end_year: 2000,  tier: 2}
-  #   scripts:
-  #     Transects_vs_WOA:
-  #       script: ocean/diagnostic_transects.py
-  #       observational_dataset: {dataset: WOA, project: OBS}
+  # --------------------------------------------------
+  # Map diagnostics - no data
+  # --------------------------------------------------
+  diag_surface_maps_no_data:
+    description: Global Ocean Surface maps - no data
+    variables:
+      intpp:
+        preprocessor: prep_surface_map_regrid_2D
+        end_year: 2004
+        mip: Omon
+        grid: gn
+      fgco2:
+        preprocessor: prep_surface_map_regrid_2D
+        end_year: 2004
+        mip: Omon
+        grid: gn
+      chl:
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2004
+        mip: Omon
+        grid: gr
+        # thresholds: [0.1, 0.2, 0.5]
+      dfe:
+        preprocessor: prep_surface_map_regrid_3D
+        end_year: 2004
+        mip: Omon
+        grid: gr
+      intdic:
+        preprocessor: prep_surface_map_regrid_2D
+        end_year: 2004
+        mip: Omon
+        grid: gr
+    scripts:
+      Global_Ocean_surface_map:
+        script: ocean/diagnostic_maps.py
 
-  # #Use WOA18 Omon for full depth profiles (thetao, so)
-  # diag_transect_vs_WOA18:
-  #   description: Transect maps vs WOA
-  #   variables:
-  #     thetao:    # exclude for NorESM2-MM
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #       thresholds: [0., 5., 10., 15., 20., 25., 30.]
-  #     so:
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #   additional_datasets:
-  #     - {dataset: WOA,  project: OBS6,  type: clim,  version: 2018,  mip: Omon,  start_year: 2000,  end_year: 2000,  tier: 2}
-  #   scripts:
-  #     Transects_vs_WOA:
-  #       script: ocean/diagnostic_transects.py
-  #       observational_dataset: {dataset: WOA, project: OBS6}
 
-  # # --------------------------------------------------
-  # # Transects diagnostics - no data
-  # # --------------------------------------------------
-  # diag_transect_no_data:
-  #   description: Transects - no data
-  #   variables:
-  #     chl:
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     dfe:    # exclude for NorESM2-MM
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #     dissic:
-  #       preprocessor: prep_transect_AMT
-  #       end_year: 2000
-  #       mip: Omon
-  #       grid: gr
-  #   scripts:
-  #     Transects_no_data:
-  #       script: ocean/diagnostic_transects.py
+  # --------------------------------------------------
+  # Transects diagnostics - vs WOA
+  # --------------------------------------------------
+  #Use WOA13 Oyr for full depth profiles (no3, o2, si, po4)
+  diag_transect_vs_WOA13:
+    description: Transect maps vs WOA
+    variables:
+      no3:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Oyr
+        grid: gr
+        thresholds: [10., 20., 30.]
+      si: # Silicate
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Oyr
+        grid: gr
+      o2: # Oxygen
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Oyr
+        grid: gr
+        thresholds: [0.03, ]
+      po4:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Oyr
+        grid: gr
+    additional_datasets:
+      - {dataset: WOA,  project: OBS,  type: clim,  version: 2013v2,  mip: Oyr,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      Transects_vs_WOA:
+        script: ocean/diagnostic_transects.py
+        observational_dataset: {dataset: WOA, project: OBS}
+
+  #Use WOA18 Omon for full depth profiles (thetao, so)
+  diag_transect_vs_WOA18:
+    description: Transect maps vs WOA
+    variables:
+      thetao:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Omon
+        grid: gr
+        thresholds: [0., 5., 10., 15., 20., 25., 30.]
+      so:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Omon
+        grid: gr
+    additional_datasets:
+      - {dataset: WOA,  project: OBS6,  type: clim,  version: 2018,  mip: Omon,  start_year: 2000,  end_year: 2000,  tier: 2}
+    scripts:
+      Transects_vs_WOA:
+        script: ocean/diagnostic_transects.py
+        observational_dataset: {dataset: WOA, project: OBS6}
+
+  # --------------------------------------------------
+  # Transects diagnostics - no data
+  # --------------------------------------------------
+  diag_transect_no_data:
+    description: Transects - no data
+    variables:
+      chl:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      dfe:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Omon
+        grid: gr
+      dissic:
+        preprocessor: prep_transect_AMT
+        end_year: 2000
+        mip: Omon
+        grid: gr
+    scripts:
+      Transects_no_data:
+        script: ocean/diagnostic_transects.py
+
