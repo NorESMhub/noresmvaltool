@@ -6,7 +6,7 @@ ESGF_ROOT=/projects/NS9560K-datalake/ESGF
 
 echo " "
 echo "Description:"
-echo "This script will move download CMIP6 model data to"
+echo "This script will move downloaded CMIP6 model data to"
 printf "\t\e[4m $ESGF_ROOT/rawdata/autosort/ \e[0m\n"
 echo "with permission check and fixes."
 
@@ -25,6 +25,7 @@ then
     exit 1
 fi
 
+n=0
 for list in $(echo $1)
 do
 
@@ -62,4 +63,8 @@ do
         echo "does not exist!"
         echo -e "** SKIP **\n"
     fi
+    let n=n+1
 done
+echo ''
+[ $? -eq 0 ] && [ $n -ne 0 ] && echo "DONE! $n files have been moved to autosort"
+echo ''
