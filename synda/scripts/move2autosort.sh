@@ -19,9 +19,9 @@ then
     printf 'Example 1: move files\n'
     printf '\tmove2autosort.sh "/path/to/files*.nc"\n'
     printf 'Example 2: move folders\n'
-    printf '\tmove2autosort.sh "/path/to/folders*.nc"\n'
+    printf '\tmove2autosort.sh "/path/to/folders*"\n'
     printf 'Example 3: move files and folders\n'
-    printf '\tmove2autosort.sh "/path/to/files*.nc /path/to/folders*.nc"\n'
+    printf '\tmove2autosort.sh "/path/to/files*.nc /path/to/folders"\n'
     exit 1
 fi
 
